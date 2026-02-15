@@ -1,0 +1,400 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Meet Ryan C. Winter - Former COO with 15+ years of business consulting experience, now helping Northeast Florida business owners achieve successful exits through expert M&A services.">
+    <meta name="keywords" content="Ryan Winter business broker, business broker St. Augustine, COO consultant, business exit strategy, M&A advisor Northeast Florida">
+    <title>About Ryan C. Winter - Experienced Business Broker in St. Augustine, FL</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+        .page-header {
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            color: white;
+            padding: 60px 20px;
+            text-align: center;
+        }
+        .page-header h1 {
+            font-size: 3em;
+            margin-bottom: 15px;
+        }
+        .page-header p {
+            font-size: 1.3em;
+            max-width: 700px;
+            margin: 0 auto;
+            opacity: 0.95;
+        }
+        .section {
+            padding: 60px 20px;
+        }
+        .section-alt {
+            background: #f8f9fa;
+        }
+        .about-intro {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 40px;
+            align-items: center;
+            max-width: 900px;
+            margin: 0 auto;
+        }
+        .about-intro h2 {
+            color: #1e3c72;
+            font-size: 2.5em;
+            margin-bottom: 20px;
+        }
+        .about-intro p {
+            font-size: 1.15em;
+            line-height: 1.8;
+            margin-bottom: 20px;
+            color: #555;
+        }
+        .highlight-box {
+            background: linear-gradient(135deg, #ff6b35 0%, #f7931e 100%);
+            color: white;
+            padding: 30px;
+            border-radius: 10px;
+            font-size: 1.2em;
+            line-height: 1.8;
+            font-style: italic;
+            margin: 30px 0;
+        }
+        .experience-section {
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+        .section-title {
+            font-size: 2.5em;
+            margin-bottom: 15px;
+            text-align: center;
+            color: #1e3c72;
+        }
+        .section-subtitle {
+            text-align: center;
+            font-size: 1.2em;
+            color: #666;
+            margin-bottom: 50px;
+        }
+        .experience-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 30px;
+            margin-top: 40px;
+        }
+        .experience-card {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+        .experience-card h3 {
+            color: #1e3c72;
+            font-size: 1.5em;
+            margin-bottom: 15px;
+        }
+        .experience-card p {
+            color: #666;
+            line-height: 1.8;
+            margin-bottom: 10px;
+        }
+        .experience-icon {
+            font-size: 2.5em;
+            margin-bottom: 15px;
+        }
+        .credentials {
+            background: white;
+            padding: 40px;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            max-width: 800px;
+            margin: 40px auto;
+        }
+        .credentials h3 {
+            color: #1e3c72;
+            font-size: 1.8em;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        .credentials ul {
+            list-style: none;
+            padding: 0;
+        }
+        .credentials li {
+            padding: 15px 0;
+            border-bottom: 1px solid #e0e0e0;
+            font-size: 1.1em;
+            color: #555;
+        }
+        .credentials li:last-child {
+            border-bottom: none;
+        }
+        .credentials li:before {
+            content: "✓ ";
+            color: #ff6b35;
+            font-weight: bold;
+            font-size: 1.3em;
+            margin-right: 10px;
+        }
+        .approach-section {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+        .approach-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 25px;
+            margin-top: 40px;
+        }
+        .approach-card {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            text-align: center;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+        .approach-card-icon {
+            font-size: 3em;
+            margin-bottom: 15px;
+        }
+        .approach-card h3 {
+            color: #1e3c72;
+            margin-bottom: 15px;
+            font-size: 1.3em;
+        }
+        .approach-card p {
+            color: #666;
+            line-height: 1.7;
+        }
+        .cta-section {
+            text-align: center;
+            padding: 60px 20px;
+            background: linear-gradient(135deg, #2a5298 0%, #1e3c72 100%);
+            color: white;
+        }
+        .cta-section h2 {
+            font-size: 2.5em;
+            margin-bottom: 20px;
+        }
+        .cta-section p {
+            font-size: 1.2em;
+            margin-bottom: 30px;
+            max-width: 700px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        .btn {
+            display: inline-block;
+            padding: 15px 35px;
+            margin: 10px;
+            text-decoration: none;
+            border-radius: 5px;
+            font-weight: bold;
+            font-size: 1.1em;
+            transition: all 0.3s ease;
+        }
+        .btn-primary {
+            background: #ff6b35;
+            color: white;
+        }
+        .btn-primary:hover {
+            background: #e55a2b;
+            transform: translateY(-2px);
+        }
+        .btn-secondary {
+            background: white;
+            color: #1e3c72;
+        }
+        .btn-secondary:hover {
+            background: #f0f0f0;
+            transform: translateY(-2px);
+        }
+        @media (max-width: 768px) {
+            .page-header h1 {
+                font-size: 2.2em;
+            }
+            .page-header p {
+                font-size: 1.1em;
+            }
+            .section-title {
+                font-size: 2em;
+            }
+            .about-intro h2 {
+                font-size: 2em;
+            }
+            .experience-grid {
+                grid-template-columns: 1fr;
+            }
+            .approach-cards {
+                grid-template-columns: 1fr;
+            }
+            .btn {
+                display: block;
+                margin: 10px auto;
+                max-width: 300px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<!-- PAGE HEADER -->
+<div class="page-header">
+    <div class="container">
+        <h1>About Ryan C. Winter</h1>
+        <p>Former COO turned business broker, dedicated to helping Northeast Florida business owners achieve successful exits</p>
+    </div>
+</div>
+
+<!-- INTRODUCTION SECTION -->
+<div class="section">
+    <div class="container">
+        <div class="about-intro">
+            <div>
+                <h2>Experience That Makes a Difference</h2>
+                <p>I'm not your typical business broker. With over 15 years of business consulting experience and a background as COO of a software company, I bring an executive-level perspective to every transaction.</p>
+
+                <p>For more than four years, I've served as a fractional COO, helping businesses optimize operations, increase profitability, and position themselves for growth or exit. This hands-on experience gives me unique insight into what buyers are looking for and how to maximize your company's value.</p>
+
+                <p>When I work with business owners in St. Augustine and throughout Northeast Florida, I don't just list businesses—I strategically position them for success. My approach combines operational expertise with proven brokerage strategies to deliver results that exceed expectations.</p>
+
+                <div class="highlight-box">
+                    "I help Northeast Florida business owners maximize their company's value and achieve successful exits. As a former software company COO with over 15 years of business consulting experience, I understand what buyers want and how to position your business for premium offers."
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- EXPERIENCE SECTION -->
+<div class="section section-alt">
+    <div class="container">
+        <div class="experience-section">
+            <h2 class="section-title">Professional Background</h2>
+            <p class="section-subtitle">A track record of helping businesses succeed</p>
+
+            <div class="experience-grid">
+                <div class="experience-card">
+                    <div class="experience-icon">💼</div>
+                    <h3>Former COO</h3>
+                    <p>Served as Chief Operating Officer of a software company, gaining invaluable experience in scaling operations, managing growth, and preparing businesses for transition.</p>
+                </div>
+
+                <div class="experience-card">
+                    <div class="experience-icon">📊</div>
+                    <h3>4+ Years Fractional COO</h3>
+                    <p>Provided fractional COO services to multiple businesses, helping optimize operations, improve profitability, and implement systems for sustainable growth.</p>
+                </div>
+
+                <div class="experience-card">
+                    <div class="experience-icon">🎯</div>
+                    <h3>15+ Years Consulting</h3>
+                    <p>Over 15 years of business consulting experience across various industries, helping companies solve complex challenges and achieve their strategic objectives.</p>
+                </div>
+
+                <div class="experience-card">
+                    <div class="experience-icon">🤝</div>
+                    <h3>M&A Specialist</h3>
+                    <p>Specialized training in mergers and acquisitions, with a focus on businesses generating $500K+ in annual revenue across Northeast Florida.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- CREDENTIALS SECTION -->
+<div class="section">
+    <div class="container">
+        <div class="credentials">
+            <h3>Professional Affiliations & Credentials</h3>
+            <ul>
+                <li>Agent with Truforte Business Group, Fort Myers</li>
+                <li>Member, Business Brokers of Florida</li>
+                <li>Member, International Business Brokers Association (IBBA)</li>
+                <li>Former Chief Operating Officer, Software Company</li>
+                <li>Fractional COO with 4+ years of experience</li>
+                <li>15+ years business consulting and advisory experience</li>
+            </ul>
+        </div>
+    </div>
+</div>
+
+<!-- APPROACH SECTION -->
+<div class="section section-alt">
+    <div class="container">
+        <div class="approach-section">
+            <h2 class="section-title">My Approach</h2>
+            <p class="section-subtitle">How I help business owners achieve successful exits</p>
+
+            <div class="approach-cards">
+                <div class="approach-card">
+                    <div class="approach-card-icon">🔒</div>
+                    <h3>Highly Confidential</h3>
+                    <p>Your business sale is handled with the utmost discretion. I understand the sensitive nature of M&A transactions and protect your confidentiality at every step.</p>
+                </div>
+
+                <div class="approach-card">
+                    <div class="approach-card-icon">⚡</div>
+                    <h3>Dynamic Approach</h3>
+                    <p>No two businesses are alike. I develop customized strategies tailored to your specific situation, industry, and goals.</p>
+                </div>
+
+                <div class="approach-card">
+                    <div class="approach-card-icon">💡</div>
+                    <h3>Strategic Positioning</h3>
+                    <p>Drawing on my COO experience, I identify opportunities to enhance your business value before going to market.</p>
+                </div>
+
+                <div class="approach-card">
+                    <div class="approach-card-icon">🎯</div>
+                    <h3>Buyer-Focused</h3>
+                    <p>I understand what buyers want because I've been in their shoes. This insight helps position your business for premium offers.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- SERVICE AREA HIGHLIGHT -->
+<div class="section">
+    <div class="container" style="text-align: center; max-width: 800px; margin: 0 auto;">
+        <h2 class="section-title">Serving Northeast Florida</h2>
+        <p style="font-size: 1.15em; line-height: 1.8; color: #555; margin-bottom: 20px;">
+            Based in the St. Augustine area, I specialize in helping business owners throughout St. Johns, Flagler, Duval, and Clay Counties. Whether you're in St. Augustine, Ponte Vedra, Jacksonville, or the surrounding communities, I bring local market expertise combined with professional brokerage services.
+        </p>
+        <p style="font-size: 1.15em; line-height: 1.8; color: #555;">
+            My focus is on established businesses with $500,000 or more in annual revenue and at least 2 years of operational history. If you're considering selling your business or looking to acquire an established company in Northeast Florida, I'd welcome the opportunity to discuss how I can help.
+        </p>
+    </div>
+</div>
+
+<!-- CTA SECTION -->
+<div class="cta-section">
+    <div class="container">
+        <h2>Let's Talk About Your Business</h2>
+        <p>Whether you're considering an exit strategy or looking to acquire a business, I offer a confidential consultation to discuss your goals and explore your options.</p>
+        <div>
+            <a href="https://calendly.com/ryancwinter/one-to-one-with-ryan?month=2026-02" class="btn btn-primary" target="_blank" rel="noopener">Schedule a Consultation</a>
+            <a href="tel:904-735-8994" class="btn btn-secondary">Call: 904-735-8994</a>
+        </div>
+        <p style="margin-top: 30px; font-size: 1.1em;">
+            <a href="mailto:ryan@ryancwinter.com" style="color: white; text-decoration: none;">📧 ryan@ryancwinter.com</a>
+        </p>
+    </div>
+</div>
+
+</body>
+</html>
