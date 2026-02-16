@@ -1,0 +1,910 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Ryan C. Winter - St. Augustine Business Broker specializing in mergers, acquisitions, and business sales for Northeast Florida. 15+ years experience helping businesses maximize value.">
+    <title>Ryan C. Winter - St. Augustine Business Broker | M&A Expert</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;600;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --navy-primary: #1a2332;
+            --navy-secondary: #2d3e50;
+            --teal-accent: #2c7a7b;
+            --teal-light: #38b2ac;
+            --gold-accent: #d4af37;
+            --warm-white: #faf8f5;
+            --cream: #f5f1ea;
+            --text-dark: #2d3748;
+            --text-medium: #4a5568;
+            --text-light: #718096;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            line-height: 1.7;
+            color: var(--text-dark);
+            background: var(--warm-white);
+            -webkit-font-smoothing: antialiased;
+        }
+
+        h1, h2, h3, h4 {
+            font-family: 'Playfair Display', Georgia, serif;
+            font-weight: 600;
+            line-height: 1.3;
+            color: var(--navy-primary);
+        }
+
+        /* Navigation */
+        .top-nav {
+            background: rgba(255, 255, 255, 0.98);
+            backdrop-filter: blur(10px);
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            border-bottom: 1px solid rgba(0,0,0,0.05);
+        }
+
+        .nav-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 24px 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.5em;
+            font-weight: 700;
+            color: var(--navy-primary);
+            letter-spacing: -0.02em;
+        }
+
+        .logo-subtitle {
+            font-family: 'Inter', sans-serif;
+            font-size: 0.35em;
+            font-weight: 400;
+            color: var(--teal-accent);
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            display: block;
+            margin-top: 4px;
+        }
+
+        .nav-menu {
+            display: flex;
+            gap: 48px;
+            list-style: none;
+            align-items: center;
+        }
+
+        .nav-menu a {
+            color: var(--text-medium);
+            text-decoration: none;
+            font-weight: 500;
+            font-size: 0.95em;
+            letter-spacing: 0.01em;
+            transition: color 0.3s ease;
+            position: relative;
+        }
+
+        .nav-menu a:hover {
+            color: var(--teal-accent);
+        }
+
+        .nav-menu a::after {
+            content: '';
+            position: absolute;
+            bottom: -4px;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: var(--teal-accent);
+            transition: width 0.3s ease;
+        }
+
+        .nav-menu a:hover::after {
+            width: 100%;
+        }
+
+        .nav-cta {
+            background: var(--teal-accent);
+            color: white;
+            padding: 12px 28px;
+            border-radius: 6px;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 0.95em;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 8px rgba(44, 122, 123, 0.2);
+        }
+
+        .nav-cta:hover {
+            background: var(--teal-light);
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(44, 122, 123, 0.3);
+        }
+
+        /* Hero Section */
+        .hero {
+            background: linear-gradient(135deg, var(--navy-primary) 0%, var(--navy-secondary) 100%);
+            color: white;
+            padding: 120px 40px 140px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('data:image/svg+xml,<svg width="100" height="100" xmlns="http://www.w3.org/2000/svg"><defs><pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse"><path d="M 40 0 L 0 0 0 40" fill="none" stroke="rgba(255,255,255,0.03)" stroke-width="1"/></pattern></defs><rect width="100%" height="100%" fill="url(%23grid)"/></svg>');
+            opacity: 0.4;
+        }
+
+        .hero-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            position: relative;
+            z-index: 1;
+        }
+
+        .hero-content {
+            max-width: 800px;
+        }
+
+        .hero-badge {
+            display: inline-block;
+            background: rgba(56, 178, 172, 0.15);
+            color: var(--teal-light);
+            padding: 8px 20px;
+            border-radius: 30px;
+            font-size: 0.85em;
+            font-weight: 600;
+            letter-spacing: 0.05em;
+            text-transform: uppercase;
+            margin-bottom: 28px;
+            border: 1px solid rgba(56, 178, 172, 0.3);
+        }
+
+        .hero h1 {
+            font-size: 3.8em;
+            margin-bottom: 28px;
+            line-height: 1.15;
+            color: white;
+            letter-spacing: -0.02em;
+        }
+
+        .hero .subtitle {
+            font-size: 1.5em;
+            margin-bottom: 24px;
+            opacity: 0.95;
+            font-weight: 300;
+            color: rgba(255,255,255,0.9);
+            letter-spacing: -0.01em;
+        }
+
+        .hero .tagline {
+            font-size: 1.15em;
+            line-height: 1.8;
+            margin-bottom: 40px;
+            opacity: 0.85;
+            max-width: 700px;
+            color: rgba(255,255,255,0.85);
+        }
+
+        .cta-buttons {
+            display: flex;
+            gap: 20px;
+            margin-top: 40px;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            padding: 18px 36px;
+            text-decoration: none;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 1em;
+            transition: all 0.3s ease;
+            letter-spacing: 0.01em;
+        }
+
+        .btn-primary {
+            background: var(--gold-accent);
+            color: var(--navy-primary);
+            box-shadow: 0 4px 16px rgba(212, 175, 55, 0.3);
+        }
+
+        .btn-primary:hover {
+            background: #e5c04d;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(212, 175, 55, 0.4);
+        }
+
+        .btn-secondary {
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            backdrop-filter: blur(10px);
+        }
+
+        .btn-secondary:hover {
+            background: rgba(255, 255, 255, 0.2);
+            border-color: rgba(255, 255, 255, 0.5);
+            transform: translateY(-2px);
+        }
+
+        /* Trust Bar */
+        .trust-bar {
+            background: white;
+            padding: 32px 40px;
+            box-shadow: 0 -4px 20px rgba(0,0,0,0.08);
+            position: relative;
+            margin-top: -60px;
+            z-index: 10;
+        }
+
+        .trust-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 40px;
+            align-items: center;
+        }
+
+        .trust-item {
+            text-align: center;
+            padding: 16px;
+        }
+
+        .trust-item-label {
+            font-size: 0.75em;
+            color: var(--text-light);
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+
+        .trust-item-value {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.2em;
+            color: var(--navy-primary);
+            font-weight: 600;
+        }
+
+        /* Sections */
+        .section {
+            padding: 100px 40px;
+        }
+
+        .section-alt {
+            background: var(--cream);
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .section-header {
+            text-align: center;
+            max-width: 800px;
+            margin: 0 auto 80px;
+        }
+
+        .section-badge {
+            display: inline-block;
+            background: rgba(44, 122, 123, 0.1);
+            color: var(--teal-accent);
+            padding: 6px 18px;
+            border-radius: 20px;
+            font-size: 0.8em;
+            font-weight: 600;
+            letter-spacing: 0.05em;
+            text-transform: uppercase;
+            margin-bottom: 20px;
+        }
+
+        .section-title {
+            font-size: 3em;
+            margin-bottom: 24px;
+            color: var(--navy-primary);
+            letter-spacing: -0.02em;
+        }
+
+        .section-subtitle {
+            font-size: 1.2em;
+            color: var(--text-medium);
+            line-height: 1.8;
+            font-weight: 400;
+        }
+
+        /* Value Props */
+        .value-props {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 48px;
+        }
+
+        .value-prop {
+            text-align: center;
+            padding: 40px 24px;
+        }
+
+        .value-number {
+            font-family: 'Playfair Display', serif;
+            font-size: 4em;
+            font-weight: 700;
+            background: linear-gradient(135deg, var(--teal-accent) 0%, var(--teal-light) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 16px;
+            line-height: 1;
+        }
+
+        .value-text {
+            font-size: 1.05em;
+            color: var(--text-dark);
+            font-weight: 500;
+            line-height: 1.6;
+        }
+
+        /* Services Grid */
+        .services-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
+            gap: 32px;
+        }
+
+        .service-card {
+            background: white;
+            padding: 48px 40px;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+            border: 1px solid rgba(0,0,0,0.06);
+            transition: all 0.4s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .service-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 4px;
+            height: 0;
+            background: linear-gradient(180deg, var(--teal-accent), var(--teal-light));
+            transition: height 0.4s ease;
+        }
+
+        .service-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 12px 32px rgba(0,0,0,0.12);
+        }
+
+        .service-card:hover::before {
+            height: 100%;
+        }
+
+        .service-icon {
+            width: 64px;
+            height: 64px;
+            background: linear-gradient(135deg, rgba(44, 122, 123, 0.1) 0%, rgba(56, 178, 172, 0.15) 100%);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 28px;
+            font-size: 1.8em;
+        }
+
+        .service-card h3 {
+            font-size: 1.6em;
+            margin-bottom: 16px;
+            color: var(--navy-primary);
+        }
+
+        .service-card p {
+            color: var(--text-medium);
+            line-height: 1.8;
+            font-size: 1.02em;
+        }
+
+        /* Service Area */
+        .service-area {
+            background: linear-gradient(135deg, var(--navy-primary) 0%, var(--navy-secondary) 100%);
+            color: white;
+            padding: 100px 40px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .service-area::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('data:image/svg+xml,<svg width="100" height="100" xmlns="http://www.w3.org/2000/svg"><defs><pattern id="dots" width="20" height="20" patternUnits="userSpaceOnUse"><circle cx="2" cy="2" r="1" fill="rgba(255,255,255,0.05)"/></pattern></defs><rect width="100%" height="100%" fill="url(%23dots)"/></svg>');
+        }
+
+        .service-area-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            text-align: center;
+            position: relative;
+            z-index: 1;
+        }
+
+        .service-area h2 {
+            font-size: 2.8em;
+            margin-bottom: 24px;
+            color: white;
+        }
+
+        .service-area p {
+            font-size: 1.25em;
+            max-width: 700px;
+            margin: 0 auto 48px;
+            opacity: 0.9;
+            line-height: 1.8;
+        }
+
+        .locations {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 16px;
+            margin-top: 40px;
+        }
+
+        .location-tag {
+            background: rgba(255,255,255,0.12);
+            backdrop-filter: blur(10px);
+            padding: 14px 28px;
+            border-radius: 30px;
+            font-size: 1em;
+            font-weight: 500;
+            border: 1px solid rgba(255,255,255,0.2);
+            transition: all 0.3s ease;
+        }
+
+        .location-tag:hover {
+            background: rgba(255,255,255,0.2);
+            border-color: rgba(255,255,255,0.3);
+        }
+
+        /* Contact Section */
+        .contact-section {
+            padding: 100px 40px;
+            background: var(--warm-white);
+        }
+
+        .contact-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            text-align: center;
+        }
+
+        .contact-section h2 {
+            font-size: 3em;
+            margin-bottom: 24px;
+        }
+
+        .contact-section p {
+            font-size: 1.2em;
+            color: var(--text-medium);
+            margin-bottom: 48px;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .contact-methods {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 32px;
+            margin-top: 60px;
+        }
+
+        .contact-method {
+            background: white;
+            padding: 40px 32px;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+            border: 1px solid rgba(0,0,0,0.06);
+            transition: all 0.3s ease;
+        }
+
+        .contact-method:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 24px rgba(0,0,0,0.1);
+        }
+
+        .contact-icon {
+            width: 56px;
+            height: 56px;
+            background: linear-gradient(135deg, rgba(44, 122, 123, 0.1) 0%, rgba(56, 178, 172, 0.15) 100%);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 24px;
+            font-size: 1.5em;
+        }
+
+        .contact-method h3 {
+            font-size: 1.1em;
+            margin-bottom: 12px;
+            color: var(--navy-primary);
+        }
+
+        .contact-method a {
+            color: var(--teal-accent);
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 1.1em;
+            transition: color 0.3s ease;
+        }
+
+        .contact-method a:hover {
+            color: var(--teal-light);
+        }
+
+        /* Footer */
+        footer {
+            background: var(--navy-primary);
+            color: rgba(255,255,255,0.7);
+            padding: 60px 40px 40px;
+            text-align: center;
+        }
+
+        footer p {
+            margin: 12px 0;
+            line-height: 1.8;
+        }
+
+        .footer-divider {
+            width: 60px;
+            height: 3px;
+            background: linear-gradient(90deg, transparent, var(--teal-accent), transparent);
+            margin: 32px auto;
+        }
+
+        /* Responsive */
+        @media (max-width: 968px) {
+            .nav-menu {
+                display: none;
+            }
+
+            .hero {
+                padding: 80px 24px 100px;
+            }
+
+            .hero h1 {
+                font-size: 2.5em;
+            }
+
+            .hero .subtitle {
+                font-size: 1.2em;
+            }
+
+            .section {
+                padding: 60px 24px;
+            }
+
+            .section-title {
+                font-size: 2.2em;
+            }
+
+            .services-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .cta-buttons {
+                flex-direction: column;
+            }
+
+            .btn {
+                width: 100%;
+                justify-content: center;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<!-- NAVIGATION -->
+<nav class="top-nav">
+    <div class="nav-container">
+        <div class="logo">
+            Ryan C. Winter
+            <span class="logo-subtitle">Business Broker</span>
+        </div>
+        <ul class="nav-menu">
+            <li><a href="#home">Home</a></li>
+            <li><a href="#about">About</a></li>
+            <li><a href="#services">Services</a></li>
+            <li><a href="#contact">Contact</a></li>
+        </ul>
+        <a href="tel:904-735-8994" class="nav-cta">904-735-8994</a>
+    </div>
+</nav>
+
+<!-- HERO SECTION -->
+<div class="hero" id="home">
+    <div class="hero-container">
+        <div class="hero-content">
+            <div class="hero-badge">Northeast Florida M&A Specialist</div>
+            <h1>Maximize Your Business Value</h1>
+            <div class="subtitle">Confidential Business Brokerage for St. Augustine & Beyond</div>
+            <p class="tagline">As a former software company COO with over 15 years of business consulting experience, I understand what buyers want and how to position your business for premium offers. I specialize in confidential M&A transactions for established businesses generating $500K+ annually.</p>
+            <div class="cta-buttons">
+                <a href="https://calendly.com/ryancwinter/one-to-one-with-ryan?month=2026-02" class="btn btn-primary" target="_blank" rel="noopener">
+                    <span>Schedule Consultation</span>
+                    <span>→</span>
+                </a>
+                <a href="tel:904-735-8994" class="btn btn-secondary">
+                    <span>Call Now</span>
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- TRUST BAR -->
+<div class="trust-bar">
+    <div class="trust-container">
+        <div class="trust-item">
+            <div class="trust-item-label">Experience</div>
+            <div class="trust-item-value">15+ Years</div>
+        </div>
+        <div class="trust-item">
+            <div class="trust-item-label">Affiliation</div>
+            <div class="trust-item-value">Truforte Business Group</div>
+        </div>
+        <div class="trust-item">
+            <div class="trust-item-label">Member</div>
+            <div class="trust-item-value">IBBA</div>
+        </div>
+        <div class="trust-item">
+            <div class="trust-item-label">Member</div>
+            <div class="trust-item-value">Business Brokers of Florida</div>
+        </div>
+    </div>
+</div>
+
+<!-- VALUE PROPOSITIONS -->
+<div class="section">
+    <div class="container">
+        <div class="section-header">
+            <div class="section-badge">Why Choose Ryan</div>
+            <h2 class="section-title">Executive Experience Meets Brokerage Expertise</h2>
+            <p class="section-subtitle">Combining operational leadership with proven M&A strategies to deliver exceptional results for Northeast Florida business owners.</p>
+        </div>
+        <div class="value-props">
+            <div class="value-prop">
+                <div class="value-number">15+</div>
+                <div class="value-text">Years Business Consulting & Advisory Experience</div>
+            </div>
+            <div class="value-prop">
+                <div class="value-number">4+</div>
+                <div class="value-text">Years as Fractional Chief Operating Officer</div>
+            </div>
+            <div class="value-prop">
+                <div class="value-number">100%</div>
+                <div class="value-text">Confidential & Discreet Transaction Process</div>
+            </div>
+            <div class="value-prop">
+                <div class="value-number">$500K+</div>
+                <div class="value-text">Minimum Annual Revenue Specialization</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- SERVICES SECTION -->
+<div class="section section-alt" id="services">
+    <div class="container">
+        <div class="section-header">
+            <div class="section-badge">Services</div>
+            <h2 class="section-title">Comprehensive Business Brokerage Solutions</h2>
+            <p class="section-subtitle">Specialized M&A services designed for established businesses in Northeast Florida's most dynamic markets.</p>
+        </div>
+        <div class="services-grid">
+            <div class="service-card">
+                <div class="service-icon">
+                    <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color: var(--teal-accent)">
+                        <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                        <circle cx="9" cy="7" r="4"></circle>
+                        <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+                        <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+                    </svg>
+                </div>
+                <h3>Mergers & Acquisitions</h3>
+                <p>Strategic guidance through the entire M&A process, from initial valuation to successful closing. I leverage my executive experience to position your business for maximum value and identify qualified buyers.</p>
+            </div>
+            <div class="service-card">
+                <div class="service-icon">
+                    <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color: var(--teal-accent)">
+                        <rect x="2" y="7" width="20" height="14" rx="2" ry="2"></rect>
+                        <path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"></path>
+                    </svg>
+                </div>
+                <h3>Business Sales & Brokerage</h3>
+                <p>Confidential representation for business owners ready to exit. Comprehensive market analysis, strategic positioning, and expert negotiation ensure a smooth transition that protects your interests.</p>
+            </div>
+            <div class="service-card">
+                <div class="service-icon">
+                    <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color: var(--teal-accent)">
+                        <line x1="12" y1="1" x2="12" y2="23"></line>
+                        <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path>
+                    </svg>
+                </div>
+                <h3>Business Acquisition Support</h3>
+                <p>Comprehensive buyer representation throughout Northeast Florida. Strategic opportunity identification, thorough due diligence, accurate valuation analysis, and skilled negotiation support.</p>
+            </div>
+            <div class="service-card">
+                <div class="service-icon">
+                    <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color: var(--teal-accent)">
+                        <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline>
+                    </svg>
+                </div>
+                <h3>Business Valuation & Positioning</h3>
+                <p>Data-driven valuations and strategic market positioning to maximize your company's appeal. I identify opportunities to enhance business value before going to market.</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- SERVICE AREA -->
+<div class="service-area">
+    <div class="service-area-content">
+        <h2>Proudly Serving Northeast Florida</h2>
+        <p>As an agent with Truforte Business Group, I specialize in business brokerage throughout the greater St. Augustine area and surrounding counties, bringing local market expertise to every transaction.</p>
+        <div class="locations">
+            <div class="location-tag">St. Augustine</div>
+            <div class="location-tag">St. Johns County</div>
+            <div class="location-tag">Ponte Vedra</div>
+            <div class="location-tag">Flagler County</div>
+            <div class="location-tag">Duval County</div>
+            <div class="location-tag">Clay County</div>
+        </div>
+    </div>
+</div>
+
+<!-- IDEAL CLIENT SECTION -->
+<div class="section">
+    <div class="container">
+        <div class="section-header">
+            <div class="section-badge">Ideal Clients</div>
+            <h2 class="section-title">Is Your Business Ready for Sale?</h2>
+            <p class="section-subtitle">I work with established, profitable businesses that meet specific criteria to ensure the best possible outcomes for all parties.</p>
+        </div>
+        <div class="services-grid">
+            <div class="service-card">
+                <div class="service-icon">
+                    <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color: var(--teal-accent)">
+                        <line x1="12" y1="1" x2="12" y2="23"></line>
+                        <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path>
+                    </svg>
+                </div>
+                <h3>$500K+ Annual Revenue</h3>
+                <p>Your business generates at least $500,000 in annual revenue, demonstrating strong market viability and sustainable growth potential that attracts serious buyers.</p>
+            </div>
+            <div class="service-card">
+                <div class="service-icon">
+                    <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color: var(--teal-accent)">
+                        <circle cx="12" cy="12" r="10"></circle>
+                        <polyline points="12 6 12 12 16 14"></polyline>
+                    </svg>
+                </div>
+                <h3>2+ Years in Operation</h3>
+                <p>Your business has a proven operational track record with at least 2 years of history, established systems, and documented financial performance that buyers can evaluate.</p>
+            </div>
+            <div class="service-card">
+                <div class="service-icon">
+                    <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color: var(--teal-accent)">
+                        <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
+                        <circle cx="12" cy="10" r="3"></circle>
+                    </svg>
+                </div>
+                <h3>Northeast Florida Location</h3>
+                <p>Your business operates in St. Johns, Flagler, Duval, or Clay counties, allowing me to leverage deep local market knowledge and established buyer networks.</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- CONTACT SECTION -->
+<div class="contact-section" id="contact">
+    <div class="contact-container">
+        <div class="section-header">
+            <div class="section-badge">Get Started</div>
+            <h2 class="section-title">Ready to Discuss Your Business?</h2>
+            <p class="section-subtitle">Let's have a confidential conversation about your business goals and how I can help you achieve a successful exit or acquisition.</p>
+        </div>
+
+        <div class="cta-buttons" style="justify-content: center;">
+            <a href="https://calendly.com/ryancwinter/one-to-one-with-ryan?month=2026-02" class="btn btn-primary" target="_blank" rel="noopener">
+                <span>Schedule Free Consultation</span>
+                <span>→</span>
+            </a>
+        </div>
+
+        <div class="contact-methods">
+            <div class="contact-method">
+                <div class="contact-icon">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color: var(--teal-accent)">
+                        <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path>
+                    </svg>
+                </div>
+                <h3>Phone</h3>
+                <a href="tel:904-735-8994">904-735-8994</a>
+            </div>
+
+            <div class="contact-method">
+                <div class="contact-icon">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color: var(--teal-accent)">
+                        <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
+                        <polyline points="22,6 12,13 2,6"></polyline>
+                    </svg>
+                </div>
+                <h3>Email</h3>
+                <a href="mailto:ryan@ryancwinter.com">ryan@ryancwinter.com</a>
+            </div>
+
+            <div class="contact-method">
+                <div class="contact-icon">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color: var(--teal-accent)">
+                        <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+                        <line x1="16" y1="2" x2="16" y2="6"></line>
+                        <line x1="8" y1="2" x2="8" y2="6"></line>
+                        <line x1="3" y1="10" x2="21" y2="10"></line>
+                    </svg>
+                </div>
+                <h3>Schedule Meeting</h3>
+                <a href="https://calendly.com/ryancwinter/one-to-one-with-ryan?month=2026-02" target="_blank" rel="noopener">View Calendar</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- FOOTER -->
+<footer>
+    <p style="color: rgba(255,255,255,0.9); font-weight: 600; font-size: 1.1em;">Ryan C. Winter</p>
+    <p>St. Augustine Business Broker</p>
+    <div class="footer-divider"></div>
+    <p>Agent with Truforte Business Group, Fort Myers</p>
+    <p>Member: Business Brokers of Florida | International Business Brokers Association (IBBA)</p>
+    <p>Serving St. Augustine, St. Johns, Ponte Vedra, Flagler, Duval, and Clay Counties</p>
+    <div style="margin-top: 40px; padding-top: 32px; border-top: 1px solid rgba(255,255,255,0.1);">
+        <p style="font-size: 0.9em;">© 2026 Ryan C. Winter. All rights reserved.</p>
+    </div>
+</footer>
+
+</body>
+</html>
