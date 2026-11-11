@@ -1,0 +1,363 @@
+<title>Genesis Shop Time Clock</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600&family=Barlow+Condensed:wght@500;600;700&display=swap">
+<style>
+/* Layout: a shop-floor kiosk. One header, four tabs, big touch targets; revenue work is green, E-time amber, idle red. */
+:root{
+  --bg:#edf0f3; --surface:#ffffff; --sunk:#e3e8ed; --ink:#14212e; --muted:#566575; --line:#cfd7df;
+  --accent:#0b5cab; --on-accent:#ffffff;
+  --rev:#17754a; --rev-soft:#dcf1e6; --et:#a85f00; --et-soft:#fbecd2; --idle:#b93426; --idle-soft:#f9dfdb; --off-soft:#e3e8ed;
+  --display:"Barlow Condensed","Arial Narrow",Arial,sans-serif; --body:"Barlow","Segoe UI",Arial,sans-serif;
+}
+@media (prefers-color-scheme: dark){ :root:not([data-theme="light"]){
+  --bg:#0f151b; --surface:#18212a; --sunk:#111920; --ink:#e7edf3; --muted:#94a3b3; --line:#2b3845;
+  --accent:#5aa9f2; --on-accent:#08131e;
+  --rev:#52c890; --rev-soft:#143325; --et:#f2ab45; --et-soft:#3a2a0e; --idle:#f27b6b; --idle-soft:#3d1c18; --off-soft:#222d38;
+  color-scheme:dark } }
+:root[data-theme="dark"]{
+  --bg:#0f151b; --surface:#18212a; --sunk:#111920; --ink:#e7edf3; --muted:#94a3b3; --line:#2b3845;
+  --accent:#5aa9f2; --on-accent:#08131e;
+  --rev:#52c890; --rev-soft:#143325; --et:#f2ab45; --et-soft:#3a2a0e; --idle:#f27b6b; --idle-soft:#3d1c18; --off-soft:#222d38;
+  color-scheme:dark }
+
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font:400 16px/1.45 var(--body);font-variant-numeric:tabular-nums}
+.wrap{max-width:1180px;margin:0 auto;padding-block:20px 96px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));display:flex;flex-direction:column;gap:18px}
+h1,h2,h3{font-family:var(--display);margin:0;line-height:1.1;text-wrap:balance}
+h1{font-size:34px;font-weight:700;letter-spacing:.01em}
+h2{font-size:24px;font-weight:600}
+h3{font-size:14px;font-weight:600;letter-spacing:.09em;text-transform:uppercase;color:var(--muted)}
+button{font:inherit;color:inherit;cursor:pointer}
+button:focus-visible,input:focus-visible,a:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+
+.top{display:flex;flex-wrap:wrap;gap:12px 24px;align-items:flex-end;justify-content:space-between}
+.eyebrow{font:600 13px var(--body);letter-spacing:.1em;text-transform:uppercase;color:var(--accent)}
+.clock{text-align:right}
+.clock b{display:block;font:700 34px/1 var(--display)}
+.clock span{color:var(--muted);font-size:14px}
+.note{background:var(--et-soft);color:var(--ink);border-left:4px solid var(--et);padding:8px 12px;font-size:14px}
+
+.tabs{display:flex;gap:4px;border-bottom:2px solid var(--line);overflow-x:auto}
+.tabs button{background:none;border:0;border-bottom:4px solid transparent;margin-bottom:-2px;padding:10px 16px;font:600 20px var(--display);color:var(--muted);white-space:nowrap}
+.tabs button[aria-selected="true"]{color:var(--ink);border-bottom-color:var(--accent)}
+
+.view{display:flex;flex-direction:column;gap:18px}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:16px}
+.row{display:flex;flex-wrap:wrap;gap:12px;align-items:center}
+.spread{justify-content:space-between}
+.muted{color:var(--muted)}
+.small{font-size:14px}
+
+.chip{display:inline-block;padding:2px 10px;border-radius:99px;font:600 13px var(--body);letter-spacing:.03em;white-space:nowrap}
+.chip.ro{background:var(--rev-soft);color:var(--rev)}
+.chip.e{background:var(--et-soft);color:var(--et)}
+.chip.idle{background:var(--idle-soft);color:var(--idle)}
+.chip.off,.chip.out,.chip.meal{background:var(--off-soft);color:var(--muted)}
+
+/* tech tiles */
+.tiles{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:12px}
+.tile{background:var(--surface);border:1px solid var(--line);border-top:6px solid var(--line);border-radius:6px;padding:14px;text-align:left;display:flex;flex-direction:column;gap:6px;min-height:150px}
+.tile.ro{border-top-color:var(--rev)} .tile.e{border-top-color:var(--et)} .tile.idle{border-top-color:var(--idle)}
+.tile:hover{border-color:var(--accent)}
+.tile .num{font:600 15px var(--display);color:var(--muted);letter-spacing:.06em}
+.tile .name{font:700 30px/1 var(--display)}
+.tile .what{font-size:14px;color:var(--muted);min-height:2.9em}
+.timer{font:700 26px/1 var(--display)}
+
+/* tech panel */
+.big{border:0;border-radius:6px;padding:18px 22px;font:700 24px var(--display);letter-spacing:.02em;background:var(--accent);color:var(--on-accent)}
+.btn{border:1px solid var(--line);background:var(--surface);border-radius:6px;padding:12px 16px;font-weight:600}
+.btn:hover{border-color:var(--accent)}
+.btn.go{background:var(--rev);border-color:var(--rev);color:var(--surface)}
+.btn.warn{border-color:var(--idle);color:var(--idle)}
+.now{display:flex;flex-wrap:wrap;gap:16px;align-items:center;justify-content:space-between}
+.now .timer{font-size:54px}
+.now.ro{border-left:8px solid var(--rev)} .now.e{border-left:8px solid var(--et)} .now.idle{border-left:8px solid var(--idle)}
+.cols{display:grid;grid-template-columns:minmax(0,3fr) minmax(0,2fr);gap:18px;align-items:start}
+@media (max-width:820px){.cols{grid-template-columns:minmax(0,1fr)}}
+.stack{display:flex;flex-direction:column;gap:10px;min-width:0}
+.job{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:4px 12px;text-align:left;background:var(--surface);border:1px solid var(--line);border-left:6px solid var(--rev);border-radius:6px;padding:12px 14px;width:100%}
+.job:hover{border-color:var(--accent);border-left-color:var(--rev)}
+.job.on{background:var(--rev-soft)}
+.job b{font:600 20px/1.15 var(--display)}
+.job .hrs{text-align:right;font:600 20px var(--display)}
+.job .sub{grid-column:1/-1;font-size:14px;color:var(--muted)}
+.egrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:8px}
+.ebtn{background:var(--surface);border:1px solid var(--line);border-bottom:4px solid var(--et);border-radius:6px;padding:10px;text-align:left;min-height:70px}
+.ebtn:hover{border-color:var(--accent);border-bottom-color:var(--et)}
+.ebtn.on{background:var(--et-soft)}
+.ebtn b{display:block;font:700 20px/1 var(--display);color:var(--et)}
+.ebtn span{font-size:14px}
+.log{list-style:none;margin:0;padding:0;display:flex;flex-direction:column}
+.log li{display:grid;grid-template-columns:118px minmax(0,1fr) auto;gap:10px;padding:8px 0;border-top:1px solid var(--line);font-size:14px}
+.log li:first-child{border-top:0}
+.dot{display:inline-block;width:10px;height:10px;border-radius:2px;margin-right:6px}
+.dot.ro{background:var(--rev)} .dot.e{background:var(--et)} .dot.idle{background:var(--idle)}
+
+/* board */
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px}
+.stat{padding:4px 0 4px 12px;border-left:4px solid var(--line)}
+.stat b{display:block;font:700 38px/1 var(--display)}
+.stat span{font-size:14px;color:var(--muted)}
+.stat.ro{border-color:var(--rev)} .stat.e{border-color:var(--et)} .stat.idle{border-color:var(--idle)}
+.brow{display:grid;grid-template-columns:150px minmax(0,1fr) 90px;gap:12px;align-items:center;padding:10px 0;border-top:1px solid var(--line)}
+.brow:first-of-type{border-top:0}
+.brow .who b{font:700 20px/1.1 var(--display);display:block}
+.track{position:relative;height:26px;background:var(--sunk);border-radius:3px;overflow:hidden}
+.seg{position:absolute;top:0;bottom:0}
+.seg.shift{background:var(--idle)} .seg.ro{background:var(--rev)} .seg.e{background:var(--et)}
+.seg.ro,.seg.e{box-shadow:inset -1px 0 0 var(--surface)}
+.axis{display:flex;justify-content:space-between;font-size:13px;color:var(--muted);margin:0 102px 0 162px}
+@media (max-width:640px){.brow{grid-template-columns:minmax(0,1fr) auto}.brow .track{grid-column:1/-1;grid-row:2}.axis{margin:0}}
+.legend{display:flex;flex-wrap:wrap;gap:6px 18px;font-size:14px;color:var(--muted)}
+
+/* tables */
+.scroll{overflow-x:auto}
+table{border-collapse:collapse;width:100%;font-size:14px}
+th,td{padding:7px 8px;border-bottom:1px solid var(--line);text-align:right;white-space:nowrap}
+th{font:600 13px var(--body);color:var(--muted);vertical-align:bottom}
+th small{display:block;font-weight:400;white-space:normal;min-width:62px;line-height:1.2}
+th:first-child,td:first-child{text-align:left;position:sticky;left:0;background:var(--surface)}
+td.l,th.l{text-align:left;white-space:normal;min-width:180px}
+tfoot td{font-weight:600;border-top:2px solid var(--ink);border-bottom:0}
+.sep{border-left:2px solid var(--line)}
+td.good{background:var(--rev-soft);color:var(--rev);font-weight:600}
+td.mid{background:var(--et-soft);color:var(--et);font-weight:600}
+td.bad{background:var(--idle-soft);color:var(--idle);font-weight:600}
+.form{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:10px;align-items:end}
+.form label{display:flex;flex-direction:column;gap:4px;font-size:13px;font-weight:600;color:var(--muted)}
+.form input{font:inherit;padding:10px;border:1px solid var(--line);border-radius:6px;background:var(--surface);color:var(--ink);width:100%}
+textarea{width:100%;height:140px;font:13px monospace;background:var(--sunk);color:var(--ink);border:1px solid var(--line)}
+.toast{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(20px + env(safe-area-inset-bottom,0px));background:var(--ink);color:var(--bg);padding:12px 18px;border-radius:6px;font-weight:600;max-width:calc(100% - 32px);z-index:5}
+</style>
+
+<div class="wrap">
+  <header class="top">
+    <div>
+      <div class="eyebrow">Genesis Automotive &amp; RV &middot; Tacoma</div>
+      <h1>Shop Time Clock</h1>
+    </div>
+    <div class="clock"><b id="clk"></b><span id="date"></span></div>
+  </header>
+  <div class="note">First-draft mockup. Repair orders, customers and today's punches are made-up examples. Changes save only in this browser. <button class="btn small" data-act="reset" style="padding:2px 10px;margin-left:6px">Reset example day</button></div>
+  <nav class="tabs" role="tablist" id="tabs"></nav>
+  <main id="view" class="view"></main>
+</div>
+<div class="toast" id="toast" hidden></div>
+
+<script>
+(function(){
+var H=3600000, FORECAST=8, KEY='genesis-timeclock-v1';
+var ECODES=[['E1','Moving vehicles'],['E2A','Quality control (paid)'],['E2B','Comeback repair'],['E3','Idle time'],['E4','Helping others'],['E5','Bldg. maint. / clean up'],['E6','Equipment maint.'],['E7','Supervisory time'],['E8','Leasehold improvements'],['E9','Break time'],['E10','On-site training'],['E11','On-job training']];
+var ENAME={}; ECODES.forEach(function(e){ENAME[e[0]]=e[1]});
+var TABS=[['clock','Time clock'],['board','Shop board'],['report','Daily report'],['jobs','Repair orders']];
+var S, ui={view:'clock',tech:null,confirm:false,copy:null}, toastTimer;
+
+function seed(){
+  var now=Date.now(), t0=now-6.2*H, at=function(h){return Math.round(t0+h*H)};
+  var s={seedAt:now,dayStart:t0,
+    techs:[{id:'31',name:'Craig'},{id:'102',name:'Tech 102'},{id:'87',name:'Winstel'},{id:'104',name:'Tech 104'},{id:'33',name:'Ken'},{id:'107',name:'Tech 107'},{id:'52',name:'Eric'},{id:'15',name:'Jeremy'}],
+    jobs:[
+     {id:'48207-1',desc:'Replace roof A/C unit, 15k BTU',unit:'2019 Grand Design Reflection 303RLS',cust:'Hadley',sold:3.5},
+     {id:'48211-1',desc:'Slide-out motor replacement, main slide',unit:'2017 Keystone Montana 3791RD',cust:'Okafor',sold:4.2},
+     {id:'48198-2',desc:'Water heater diagnostics, no ignition',unit:'2021 Winnebago Vista 29V',cust:'Brandt',sold:2.5},
+     {id:'48203-1',desc:'Reseal roof seams and skylight',unit:'2015 Thor Four Winds 31E',cust:'Marsh',sold:4.0},
+     {id:'48214-1',desc:'Awning fabric replacement, 18 ft',unit:'2022 Jayco Jay Flight 264BH',cust:'Tully',sold:1.8},
+     {id:'48209-1',desc:'Wheel bearing repack, tandem axle',unit:'2020 Forest River Rockwood 2608BS',cust:'Ferris',sold:2.8},
+     {id:'48212-2',desc:'LP leak test and regulator replacement',unit:'2018 Airstream Flying Cloud 25FB',cust:'Lindqvist',sold:1.5},
+     {id:'48201-1',desc:'Generator service, Onan 4000',unit:'2016 Tiffin Allegro 32SA',cust:'Pruitt',sold:3.0},
+     {id:'48210-1',desc:'Brake controller install and 7-way wiring',unit:'2023 Ram 2500 (tow vehicle)',cust:'Ochoa',sold:2.4},
+     {id:'48206-3',desc:'Winterize and battery load test',unit:'2019 Coachmen Freelander 27QB',cust:'Stanek',sold:1.5},
+     {id:'48212-3',desc:'Replace entry step motor',unit:'2018 Airstream Flying Cloud 25FB',cust:'Lindqvist',sold:1.2},
+     {id:'48215-1',desc:'Delamination repair, front cap',unit:'2014 Jayco Eagle 284BHS',cust:'Ruiz',sold:6.5},
+     {id:'48216-1',desc:'Oil change and chassis lube, Ford F-53',unit:'2020 Newmar Bay Star 3014',cust:'Abbott',sold:1.3}],
+    punches:[],entries:[]};
+  function P(t,a,b,meal){s.punches.push({tech:t,in:at(a),out:b==null?null:at(b),meal:!!meal})}
+  function N(t,k,r,a,b){s.entries.push({tech:t,kind:k,ref:r,start:at(a),end:b==null?null:at(b)})}
+  function D(id,t,h){var j=s.jobs.filter(function(j){return j.id==id})[0];j.status='done';j.doneBy=t;j.doneAt=at(h)}
+  P('31',0); N('31','ro','48207-1',0,2.6); D('48207-1','31',2.6); N('31','e','E9',2.6,2.85); N('31','ro','48211-1',2.85);
+  P('87',0.05); N('87','ro','48198-2',0.05,1.9); D('48198-2','87',1.9); N('87','e','E4',1.9,2.4); N('87','ro','48203-1',2.4,5.3); D('48203-1','87',5.3); N('87','ro','48214-1',5.3);
+  P('33',0,3.0,true); P('33',3.5); N('33','e','E1',0,0.4); N('33','ro','48209-1',0.4,3.0); D('48209-1','33',3.0); N('33','ro','48212-2',3.5);
+  P('52',0.1); N('52','ro','48201-1',0.1,2.2); D('48201-1','52',2.2); N('52','e','E9',2.2,2.45); N('52','e','E2B',2.45,3.6); N('52','ro','48210-1',3.6,5.6);
+  P('15',0); N('15','e','E7',0,1.5); N('15','e','E5',1.5,2.3); N('15','ro','48206-3',2.3,4.4); D('48206-3','15',4.4); N('15','e','E11',4.4);
+  return s;
+}
+function load(){ try{var s=JSON.parse(localStorage.getItem(KEY)); if(s&&Date.now()-s.seedAt<16*H) return s}catch(e){} return seed() }
+function save(){ try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){} }
+
+function esc(v){return String(v).replace(/[&<>"]/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]})}
+function tech(id){return S.techs.filter(function(t){return t.id==id})[0]}
+function job(id){return S.jobs.filter(function(j){return j.id==id})[0]}
+function cur(id){return S.entries.filter(function(e){return e.tech==id&&!e.end})[0]}
+function openPunch(id){return S.punches.filter(function(p){return p.tech==id&&!p.out})[0]}
+function hrs(ms){return (ms/H).toFixed(2)}
+function blank(ms){return ms>30000?hrs(ms):''}
+function hms(ms){var s=Math.max(0,Math.floor(ms/1000)),h=Math.floor(s/3600),m=Math.floor(s%3600/60);s%=60;return h+':'+(m<10?'0':'')+m+':'+(s<10?'0':'')+s}
+function tm(t){return new Date(t).toLocaleTimeString([],{hour:'numeric',minute:'2-digit'})}
+function pct(n,d){return d>0?Math.round(n/d*1000)/10:null}
+function label(e){return e.kind=='ro'?'RO '+e.ref:e.ref+' '+ENAME[e.ref]}
+
+function status(id){
+  var c=cur(id); if(c) return c.kind;
+  if(openPunch(id)) return 'idle';
+  var ps=S.punches.filter(function(p){return p.tech==id}); if(!ps.length) return 'off';
+  return ps[ps.length-1].meal?'meal':'out';
+}
+var SLABEL={ro:'On a job',e:'E-time',idle:'Idle, no job',meal:'Meal break',out:'Clocked out',off:'Not clocked in'};
+function stats(id){
+  var now=Date.now(),avail=0,ro=0,sum=0,e={};
+  S.punches.forEach(function(p){if(p.tech==id)avail+=(p.out||now)-p.in});
+  S.entries.forEach(function(x){if(x.tech!=id)return;var d=(x.end||now)-x.start;sum+=d;if(x.kind=='ro')ro+=d;else e[x.ref]=(e[x.ref]||0)+d});
+  var idle=Math.max(0,avail-sum); e.E3=(e.E3||0)+idle;
+  var sold=0; S.jobs.forEach(function(j){if(j.doneBy==id)sold+=j.sold});
+  return {avail:avail,ro:ro,e:e,etot:avail-ro,sold:sold,idle:idle};
+}
+function jobClocked(id){var now=Date.now(),t=0;S.entries.forEach(function(x){if(x.kind=='ro'&&x.ref==id)t+=(x.end||now)-x.start});return t}
+
+/* actions */
+function endCur(id){var c=cur(id); if(c)c.end=Date.now()}
+function say(m){var t=document.getElementById('toast');t.textContent=m;t.hidden=false;clearTimeout(toastTimer);toastTimer=setTimeout(function(){t.hidden=true},3500)}
+var ACT={
+  tab:function(d){ui.view=d.v;ui.tech=null;try{location.hash=d.v}catch(e){}},
+  pick:function(d){ui.tech=d.id},
+  back:function(){ui.tech=null},
+  in:function(d){S.punches.push({tech:d.id,in:Date.now(),out:null});say(tech(d.id).name+' clocked in to the shop at '+tm(Date.now()))},
+  out:function(d){ if(!ui.confirm){ui.confirm=true;return 'keep'} endCur(d.id);openPunch(d.id).out=Date.now();say(tech(d.id).name+' clocked out at '+tm(Date.now()));ui.tech=null},
+  meal:function(d){endCur(d.id);var p=openPunch(d.id);p.out=Date.now();p.meal=true;say(tech(d.id).name+' is on meal break (unpaid)')},
+  start:function(d){var c=cur(d.id); if(c&&c.kind==d.k&&c.ref==d.ref)return; endCur(d.id);S.entries.push({tech:d.id,kind:d.k,ref:d.ref,start:Date.now(),end:null});say(tech(d.id).name+' is now on '+(d.k=='ro'?'RO '+d.ref:d.ref+' '+ENAME[d.ref]))},
+  stop:function(d){endCur(d.id);say('Stopped. '+tech(d.id).name+' is clocked in with no job.')},
+  done:function(d){var c=cur(d.id),j=job(c.ref);endCur(d.id);j.status='done';j.doneBy=d.id;j.doneAt=Date.now();say('RO '+j.id+' complete. '+j.sold.toFixed(1)+' sold hours credited to '+tech(d.id).name+'.')},
+  reset:function(){S=seed();ui.tech=null;say('Example day reset')},
+  copy:function(){var t=reportTSV(); ui.copy=null;
+    try{navigator.clipboard.writeText(t).then(function(){say('Report copied. Paste it into Excel or Google Sheets.')},function(){ui.copy=t;render()})}catch(e){ui.copy=t}}
+};
+document.addEventListener('click',function(ev){
+  var b=ev.target.closest('[data-act]'); if(!b)return;
+  var r=ACT[b.dataset.act](b.dataset); if(r!='keep')ui.confirm=false;
+  save();render();
+});
+document.addEventListener('submit',function(ev){
+  ev.preventDefault(); var f=ev.target, v=function(n){return f.elements[n].value.trim()};
+  if(!v('ro')||!v('desc'))return say('Enter an RO number and a job description.');
+  if(job(v('ro')))return say('RO '+v('ro')+' is already on the list.');
+  S.jobs.push({id:v('ro'),desc:v('desc'),unit:v('unit'),cust:v('cust'),sold:parseFloat(v('sold'))||0});
+  save();render();say('RO '+v('ro')+' added. Techs can clock in to it now.');
+});
+
+/* views */
+function chip(st){return '<span class="chip '+st+'">'+SLABEL[st]+'</span>'}
+function activity(id){
+  var c=cur(id),st=status(id);
+  if(c&&c.kind=='ro'){var j=job(c.ref);return {t:'RO '+j.id,s:j.desc,since:c.start}}
+  if(c)return {t:c.ref,s:ENAME[c.ref],since:c.start};
+  if(st=='idle'){var last=0;S.entries.forEach(function(x){if(x.tech==id&&x.end>last)last=x.end});return {t:'No job',s:'Counting as E3 idle time',since:Math.max(last,openPunch(id).in)}}
+  return null;
+}
+function vClock(){
+  if(ui.tech)return vTech(ui.tech);
+  return '<div class="row spread"><h2>Tap your name</h2><span class="muted small">The live version would ask for a 4-digit PIN here.</span></div><div class="tiles">'+
+  S.techs.map(function(t){var st=status(t.id),a=activity(t.id);
+    return '<button class="tile '+st+'" data-act="pick" data-id="'+t.id+'"><span class="num">TECH '+t.id+'</span><span class="name">'+esc(t.name)+'</span>'+chip(st)+
+      '<span class="what">'+(a?'<b>'+esc(a.t)+'</b> &middot; '+esc(a.s):(st=='off'?'Tap to clock in':'Tap to clock back in'))+'</span>'+
+      (a?'<span class="timer" data-since="'+a.since+'"></span>':'')+'</button>'}).join('')+'</div>';
+}
+function vTech(id){
+  var t=tech(id),st=status(id),a=activity(id),c=cur(id),x=stats(id),h='';
+  h+='<div class="row spread"><div class="row"><button class="btn" data-act="back">&larr; All techs</button><h2>'+esc(t.name)+' <span class="muted">#'+t.id+'</span></h2>'+chip(st)+'</div>'+
+     '<span class="muted small">Today: '+hrs(x.avail)+' hrs in shop &middot; '+hrs(x.ro)+' on jobs &middot; '+hrs(x.etot)+' E-time</span></div>';
+  if(!a){
+    h+='<div class="card now"><div><h3>'+SLABEL[st]+'</h3><p class="muted" style="margin:6px 0 0">Clock in to the shop first, then pick a repair order or an E-time code.</p></div>'+
+       '<button class="big" data-act="in" data-id="'+id+'">'+(st=='meal'?'Back from meal':'Clock in to shop')+'</button></div>';
+  } else {
+    h+='<div class="card now '+st+'"><div><h3>'+(st=='idle'?'Clocked in, not on a job':'Working on')+'</h3><div style="font:700 30px/1.1 var(--display);margin-top:4px">'+esc(a.t)+'</div><div class="muted">'+esc(a.s)+'</div></div>'+
+       '<div class="timer" data-since="'+a.since+'"></div><div class="row">'+
+       (c&&c.kind=='ro'?'<button class="btn go" data-act="done" data-id="'+id+'">Job complete</button>':'')+
+       (c?'<button class="btn" data-act="stop" data-id="'+id+'">'+(c.kind=='ro'?'Pause job':'Stop')+'</button>':'')+'</div></div>';
+    var open=S.jobs.filter(function(j){return j.status!='done'});
+    h+='<div class="cols"><div class="stack"><h3>Repair orders (revenue)</h3>'+open.map(function(j){var on=c&&c.kind=='ro'&&c.ref==j.id,cl=jobClocked(j.id);
+        return '<button class="job'+(on?' on':'')+'" data-act="start" data-k="ro" data-ref="'+esc(j.id)+'" data-id="'+id+'"><b>RO '+esc(j.id)+' &middot; '+esc(j.desc)+'</b><span class="hrs">'+j.sold.toFixed(1)+' hr</span>'+
+          '<span class="sub">'+esc(j.unit)+(j.cust?' &middot; '+esc(j.cust):'')+' &middot; '+(cl>0?hrs(cl)+' hrs clocked so far':'not started')+(on?' &middot; you are on this job':'')+'</span></button>'}).join('')+
+      '</div><div class="stack"><h3>E-time (non-revenue)</h3><div class="egrid">'+ECODES.filter(function(e){return e[0]!='E3'}).map(function(e){var on=c&&c.kind=='e'&&c.ref==e[0];
+        return '<button class="ebtn'+(on?' on':'')+'" data-act="start" data-k="e" data-ref="'+e[0]+'" data-id="'+id+'"><b>'+e[0]+'</b><span>'+e[1]+'</span></button>'}).join('')+
+      '</div><p class="muted small" style="margin:0">E3 idle time is never picked. Any minute clocked in to the shop without a job or code lands there on its own.</p>'+
+      '<div class="row" style="margin-top:8px"><button class="btn" data-act="meal" data-id="'+id+'">Meal break (unpaid)</button>'+
+      '<button class="btn warn" data-act="out" data-id="'+id+'">'+(ui.confirm?'Tap again to clock out':'Clock out for the day')+'</button></div></div></div>';
+  }
+  var log=[]; S.punches.forEach(function(p){if(p.tech!=id)return;log.push({at:p.in,h:'<span></span><span>Clocked in to shop</span><span>'+tm(p.in)+'</span>'});if(p.out)log.push({at:p.out,h:'<span></span><span>'+(p.meal?'Meal break (unpaid)':'Clocked out')+'</span><span>'+tm(p.out)+'</span>'})});
+  S.entries.forEach(function(e){if(e.tech!=id)return;var j=e.kind=='ro'?job(e.ref):null;
+    log.push({at:e.start+1,h:'<span>'+tm(e.start)+' &ndash; '+(e.end?tm(e.end):'now')+'</span><span><i class="dot '+e.kind+'"></i>'+esc(label(e))+(j?' &middot; '+esc(j.desc):'')+'</span><span>'+hrs((e.end||Date.now())-e.start)+' hr</span>'})});
+  log.sort(function(a,b){return b.at-a.at});
+  if(log.length)h+='<div class="card"><h3>'+esc(t.name)+'’s time card today</h3><ul class="log">'+log.map(function(l){return '<li>'+l.h+'</li>'}).join('')+'</ul></div>';
+  return h;
+}
+function vBoard(){
+  var n={ro:0,e:0,idle:0,in:0},now=Date.now(),t0=S.dayStart,span=now-t0;
+  S.techs.forEach(function(t){var s=status(t.id);if(s in n){n[s]++;n.in++}});
+  var pos=function(a,b){return 'left:'+((a-t0)/span*100).toFixed(2)+'%;width:'+(((b||now)-a)/span*100).toFixed(2)+'%'};
+  return '<div class="stats"><div class="stat"><b>'+n.in+' / '+S.techs.length+'</b><span>techs clocked in</span></div><div class="stat ro"><b>'+n.ro+'</b><span>on revenue jobs</span></div><div class="stat e"><b>'+n.e+'</b><span>on E-time</span></div><div class="stat idle"><b>'+n.idle+'</b><span>clocked in with no job</span></div></div>'+
+  '<div class="card"><div class="row spread" style="margin-bottom:8px"><h3>Today by technician</h3><div class="legend"><span><i class="dot ro"></i>Repair order</span><span><i class="dot e"></i>E-time</span><span><i class="dot idle"></i>Idle</span></div></div>'+
+  S.techs.map(function(t){var st=status(t.id),a=activity(t.id),x=stats(t.id);
+    return '<div class="brow"><div class="who"><b>'+esc(t.name)+'</b>'+chip(st)+'</div><div class="track" title="'+esc(t.name)+'">'+
+      S.punches.filter(function(p){return p.tech==t.id}).map(function(p){return '<i class="seg shift" style="'+pos(p.in,p.out)+'"></i>'}).join('')+
+      S.entries.filter(function(e){return e.tech==t.id}).map(function(e){return '<i class="seg '+e.kind+'" style="'+pos(e.start,e.end)+'" title="'+esc(label(e))+'"></i>'}).join('')+
+      '</div><div class="small" style="text-align:right">'+(a?'<b>'+esc(a.t)+'</b><br><span data-since="'+a.since+'"></span>':'<span class="muted">'+(x.avail?hrs(x.avail)+' hr':'&ndash;')+'</span>')+'</div></div>'}).join('')+
+  '<div class="axis"><span>'+tm(t0)+'</span><span>now</span></div></div>';
+}
+function grade(v,g,m){return v==null?'':v>=g?'good':v>=m?'mid':'bad'}
+function reportRows(){
+  var tot={e:{},etot:0,sold:0,avail:0,ro:0};
+  var rows=S.techs.map(function(t){var x=stats(t.id);
+    ECODES.forEach(function(c){tot.e[c[0]]=(tot.e[c[0]]||0)+(x.e[c[0]]||0)}); tot.etot+=x.etot;tot.sold+=x.sold;tot.avail+=x.avail;tot.ro+=x.ro;
+    return {name:t.id+' '+t.name,x:x}});
+  rows.push({name:'Daily totals',x:tot,total:true}); return rows;
+}
+function vReport(){
+  var rows=reportRows(),nIn=S.techs.filter(function(t){return stats(t.id).avail>0}).length;
+  var tr=function(r){var x=r.x,p=pct(x.ro,x.avail),ef=x.ro>0?pct(x.sold*H,x.ro):null,d=x.avail>0?pct(x.ro,FORECAST*H*(r.total?nIn:1)):null;
+    return '<tr><td>'+esc(r.name)+'</td>'+ECODES.map(function(c){return '<td>'+blank(x.e[c[0]]||0)+'</td>'}).join('')+
+      '<td class="sep">'+blank(x.etot)+'</td><td>'+(x.sold?x.sold.toFixed(2):'')+'</td><td>'+blank(x.avail)+'</td><td>'+blank(x.ro)+'</td>'+
+      '<td class="sep '+grade(p,90,80)+'">'+(p==null?'':p+'%')+'</td><td class="'+grade(ef,100,85)+'">'+(ef==null?'':ef+'%')+'</td><td>'+(d==null?'':d+'%')+'</td></tr>'};
+  return '<div class="row spread"><div><h2>Technician Time Control Summary</h2><span class="muted small">'+new Date().toLocaleDateString([],{weekday:'long',month:'long',day:'numeric',year:'numeric'})+' &middot; forecast '+FORECAST.toFixed(2)+' hrs per tech per day</span></div><button class="btn" data-act="copy">Copy for spreadsheet</button></div>'+
+  (ui.copy?'<div class="card"><p class="small" style="margin-top:0">Select all of this text, copy it, and paste it into Excel or Google Sheets.</p><textarea id="tsv" readonly>'+esc(ui.copy)+'</textarea></div>':'')+
+  '<div class="card scroll"><table><thead><tr><th>Technician</th>'+ECODES.map(function(c){return '<th>'+c[0]+'<small>'+c[1]+'</small></th>'}).join('')+
+  '<th class="sep">A<small>Total E-time</small></th><th>B<small>Sold hours paid</small></th><th>C<small>Available hours</small></th><th>D<small>Time producing (C&minus;A)</small></th><th class="sep">D/C<small>Productivity</small></th><th>B/D<small>Efficiency</small></th><th>D/E<small>Door-open productivity</small></th></tr></thead>'+
+  '<tbody>'+rows.slice(0,-1).map(tr).join('')+'</tbody><tfoot>'+tr(rows[rows.length-1])+'</tfoot></table></div>'+
+  '<p class="muted small" style="margin:0;max-width:75ch">Same columns as the paper CompuTrek sheet, filled in from the punches. Sold hours count when a tech taps Job complete, so efficiency reads low until open jobs are finished. Door-open productivity climbs through the day toward the '+FORECAST+'-hour forecast.</p>';
+}
+function reportTSV(){
+  var head=['Technician'].concat(ECODES.map(function(c){return c[0]+' '+c[1]}),['Total E','Sold hours paid','Available hours','Time producing','Productivity %','Efficiency %']);
+  return [head.join('\t')].concat(reportRows().map(function(r){var x=r.x,p=pct(x.ro,x.avail),ef=x.ro>0?pct(x.sold*H,x.ro):null;
+    return [r.name].concat(ECODES.map(function(c){return hrs(x.e[c[0]]||0)}),[hrs(x.etot),x.sold.toFixed(2),hrs(x.avail),hrs(x.ro),p==null?'':p,ef==null?'':ef]).join('\t')})).join('\n');
+}
+function vJobs(){
+  return '<div class="card scroll"><table><thead><tr><th>RO / line</th><th class="l">Job</th><th class="l">Unit / customer</th><th>Sold hrs</th><th>Clocked hrs</th><th>Over / under</th><th>Status</th></tr></thead><tbody>'+
+  S.jobs.map(function(j){var cl=jobClocked(j.id),on=S.entries.filter(function(e){return e.kind=='ro'&&e.ref==j.id&&!e.end}).map(function(e){return tech(e.tech).name}),v=cl/H-j.sold;
+    var st=j.status=='done'?'<span class="chip off">Done &middot; '+esc(tech(j.doneBy).name)+'</span>':on.length?'<span class="chip ro">'+esc(on.join(', '))+' on it</span>':cl>0?'<span class="chip e">Paused</span>':'<span class="chip off">Not started</span>';
+    return '<tr><td><b>'+esc(j.id)+'</b></td><td class="l">'+esc(j.desc)+'</td><td class="l">'+esc(j.unit)+(j.cust?'<br><span class="muted">'+esc(j.cust)+'</span>':'')+'</td><td>'+j.sold.toFixed(2)+'</td><td>'+(cl?hrs(cl):'')+'</td>'+
+      '<td class="'+(cl&&j.status=='done'?(v>0?'bad':'good'):'')+'">'+(cl?(v>0?'+':'')+v.toFixed(2):'')+'</td><td>'+st+'</td></tr>'}).join('')+'</tbody></table></div>'+
+  '<form class="card stack" id="jobform"><h3>Add a repair order line</h3><div class="form">'+
+  '<label>RO / line number<input id="f-ro" name="ro" placeholder="48217-1"></label><label>Job description<input id="f-desc" name="desc" placeholder="Replace water pump"></label>'+
+  '<label>Unit<input id="f-unit" name="unit" placeholder="2021 Jayco Eagle"></label><label>Customer<input id="f-cust" name="cust" placeholder="Last name"></label>'+
+  '<label>Sold hours<input id="f-sold" name="sold" inputmode="decimal" placeholder="2.0"></label><button class="big" style="font-size:20px;padding:10px 16px" type="submit">Add job</button></div>'+
+  '<p class="muted small" style="margin:0">In the live version the service writer adds these, or they come straight from the shop management system.</p></form>';
+}
+var VIEWS={clock:vClock,board:vBoard,report:vReport,jobs:vJobs};
+function render(){
+  document.getElementById('tabs').innerHTML=TABS.map(function(t){return '<button role="tab" aria-selected="'+(ui.view==t[0])+'" data-act="tab" data-v="'+t[0]+'">'+t[1]+'</button>'}).join('');
+  document.getElementById('view').innerHTML=VIEWS[ui.view]();
+  var ta=document.getElementById('tsv'); if(ta){ta.focus();ta.select()}
+  tick();
+}
+function tick(){
+  var now=new Date();
+  document.getElementById('clk').textContent=now.toLocaleTimeString([],{hour:'numeric',minute:'2-digit',second:'2-digit'});
+  document.getElementById('date').textContent=now.toLocaleDateString([],{weekday:'long',month:'long',day:'numeric'});
+  var els=document.querySelectorAll('[data-since]'); for(var i=0;i<els.length;i++)els[i].textContent=hms(now-els[i].dataset.since);
+}
+function route(){var h=(location.hash||'').slice(1); if(VIEWS[h]&&h!=ui.view){ui.view=h;ui.tech=null;render()}}
+S=load(); route(); render();
+window.addEventListener('hashchange',route);
+setInterval(tick,1000);
+setInterval(function(){ if(ui.view!='jobs'&&!ui.copy)render() },30000);
+})();
+</script>
