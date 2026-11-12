@@ -102,6 +102,14 @@ tfoot td{font-weight:700;border-bottom:0;border-top:1px solid var(--ink)}
 .track i{position:absolute;top:0;bottom:0}
 .track .shift{background:var(--idle)} .track .ro{background:var(--rev)} .track .e{background:var(--et)}
 @media (max-width:640px){.live{grid-template-columns:minmax(0,1fr) auto}.live .track{grid-column:1/-1}}
+.figs{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:20px}
+.fig b{display:block;font-size:36px;font-weight:700;letter-spacing:-.02em;line-height:1.1}
+.fig span{font-size:15px;color:var(--muted)}
+.erow{display:grid;grid-template-columns:230px minmax(0,1fr) 70px;gap:16px;align-items:center;padding:9px 0;border-bottom:1px solid var(--line);font-size:15px}
+.erow b{display:inline-block;min-width:36px;color:var(--et)}
+.erow span:last-child{text-align:right}
+.erow .bar i{background:var(--et)}
+@media (max-width:560px){.erow{grid-template-columns:minmax(0,1fr) 70px}.erow .bar{grid-column:1/-1;grid-row:2}}
 td input{width:76px;padding:6px 8px;text-align:right;font-size:15px}
 textarea{width:100%;height:140px;font:13px monospace;background:var(--soft);color:var(--ink);border:1px solid var(--line);border-radius:10px;padding:10px}
 .foot{font-size:14px;color:var(--muted);border-top:1px solid var(--line);padding-top:16px}
@@ -120,15 +128,18 @@ textarea{width:100%;height:140px;font:13px monospace;background:var(--soft);colo
 
 <script>
 (function(){
-var H=3600000, FORECAST=8, KEY='genesis-timeclock-v2', PIN='1234';
+var H=3600000, FORECAST=8, KEY='genesis-timeclock-v3', PIN='1234';
 var ECODES=[['E1','Moving vehicles'],['E2A','Quality control (paid)'],['E2B','Comeback repair'],['E3','Idle time'],['E4','Helping others'],['E5','Bldg. maint. / clean up'],['E6','Equipment maint.'],['E7','Supervisory time'],['E8','Leasehold improvements'],['E9','Break time'],['E10','On-site training'],['E11','On-job training']];
 var ENAME={}; ECODES.forEach(function(e){ENAME[e[0]]=e[1]});
 /* month-to-date hours taken from the June CompuTrek sheet */
 var MONTH={'31':{sold:29.27,avail:29.27,ro:29.27},'87':{sold:179.21,avail:157.17,ro:144.36},'33':{sold:192.88,avail:153.41,ro:141.31},'52':{sold:256.46,avail:157.20,ro:153.48},'15':{sold:51.61,avail:105.80,ro:64.86}};
-var S, toastTimer, ui={user:null,pick:null,err:'',viewAs:null,tab:'overview',period:'month',sort:'sold',confirm:false,finishing:false,copy:null};
+var S, toastTimer, ui={user:'owner',pick:null,err:'',viewAs:null,tab:'overview',period:'month',sort:'sold',confirm:false,finishing:false,copy:null};
 
 function seed(){
-  var now=Date.now(), t0=now-6.2*H, at=function(h){return Math.round(t0+h*H)};
+  var now=Date.now(), t0=now-6.2*H, k=1, d=new Date(), open=new Date(d.getFullYear(),d.getMonth(),d.getDate(),7,30).getTime();
+  /* during shop hours, stretch the example day so it starts at 7:30 AM */
+  if(now-open>2.5*H&&now-open<10.5*H){t0=open;k=(now-open)/(6.2*H)}
+  var at=function(h){return Math.round(t0+h*k*H)};
   var s={seedAt:now,dayStart:t0,
     techs:[{id:'31',name:'Craig'},{id:'102',name:'Tech 102'},{id:'87',name:'Winstel'},{id:'104',name:'Tech 104'},{id:'33',name:'Ken'},{id:'107',name:'Tech 107'},{id:'52',name:'Eric'},{id:'15',name:'Jeremy'}],
     jobs:[
@@ -148,7 +159,7 @@ function seed(){
   P('15',0); N('15','e','E7',0,1.5); N('15','e','E5',1.5,2.3); N('15','ro','48206',2.3,4.4); D('48206','15',4.4); N('15','e','E11',4.4);
   return s;
 }
-function load(){ try{var s=JSON.parse(localStorage.getItem(KEY)); if(s&&Date.now()-s.seedAt<16*H) return s}catch(e){} return seed() }
+function load(){ try{var s=JSON.parse(localStorage.getItem(KEY)); if(s&&new Date(s.seedAt).toDateString()==new Date().toDateString()) return s}catch(e){} return seed() }
 function save(){ try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){} }
 
 function esc(v){return String(v==null?'':v).replace(/[&<>"]/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]})}
@@ -313,6 +324,7 @@ function vOverview(){
     '<td class="'+grade(p.eff,100,85)+'">'+(p.eff==null?'<span class="muted">n/a</span>':p.eff+'%')+'</td><td class="'+grade(p.prod,90,80)+'">'+p.prod+'%</td><td>'+p.et.toFixed(1)+' hr</td></tr>'}).join('')+
   '</tbody></table></div>'+
   '<p class="muted small" style="max-width:44em"><b>Sold hours</b> are the billed hours on finished repair orders. <b>Efficiency</b> is sold hours divided by hours clocked on repair orders, so above 100% means beating the book. <b>Productivity</b> is the share of shop time spent on repair orders instead of E-time.'+(P=='month'?' Month figures are the June totals from the CompuTrek sheet plus today’s example punches.':'')+'</p></section>'+
+  shop(rows,P)+
   '<section><div class="row spread"><h2>Right now</h2><span class="muted small">'+n.all+' of '+S.techs.length+' clocked in &middot; '+n.ro+' on repair orders &middot; '+n.e+' on E-time &middot; '+n.idle+' idle</span></div><div>'+
   S.techs.map(function(t){var s=status(t.id),a=activity(t.id);
     return '<div class="live"><b>'+esc(t.name)+'</b>'+st(s)+'<div class="track">'+
@@ -320,6 +332,16 @@ function vOverview(){
       S.entries.filter(function(e){return e.tech==t.id}).map(function(e){return '<i class="'+e.kind+'" style="'+pos(e.start,e.end)+'" title="'+esc(label(e))+'"></i>'}).join('')+
       '</div><span style="text-align:right">'+(a?'<span data-since="'+a.since+'"></span>':'')+'</span></div>'}).join('')+
   '</div><div class="row small muted" style="gap:18px"><span><i class="dot ro"></i> Repair order</span><span><i class="dot e"></i> E-time</span><span><i class="dot idle"></i> Idle</span><span>Bars run from '+tm(t0)+' to now</span></div></section>';
+}
+function shop(rows,P){
+  var t={sold:0,avail:0,ro:0}; rows.forEach(function(r){t.sold+=r.p.sold;t.avail+=r.p.avail;t.ro+=r.p.ro});
+  var eff=t.ro>0.02?pct(t.sold,t.ro):null,prod=pct(t.ro,t.avail),e=reportRows().pop().x.e;
+  var codes=ECODES.map(function(c){return {c:c,ms:e[c[0]]||0}}).filter(function(x){return x.ms>30000}).sort(function(a,b){return b.ms-a.ms}),max=codes.length?codes[0].ms:1;
+  var fig=function(v,l,cls){return '<div class="fig"><b class="'+(cls||'')+'">'+v+'</b><span>'+l+'</span></div>'};
+  return '<section><h2>The shop '+(P=='month'?'this month':'today')+'</h2><div class="figs">'+
+    fig(t.sold.toFixed(1),'sold hours')+fig(eff==null?'n/a':eff+'%','efficiency',grade(eff,100,85))+fig(prod==null?'n/a':prod+'%','productivity',grade(prod,90,80))+fig((t.avail-t.ro).toFixed(1),'hours of E-time')+'</div>'+
+    (codes.length?'<h3 style="margin-top:8px">Where today\u2019s E-time went</h3><div>'+codes.map(function(x){
+      return '<div class="erow"><span><b>'+x.c[0]+'</b> '+x.c[1]+'</span><div class="bar"><i style="width:'+(x.ms/max*100).toFixed(1)+'%"></i></div><span>'+hrs(x.ms)+' hr</span></div>'}).join('')+'</div>':'')+'</section>';
 }
 function reportRows(){
   var tot={e:{},etot:0,sold:0,avail:0,ro:0};
