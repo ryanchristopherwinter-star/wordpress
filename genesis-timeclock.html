@@ -105,11 +105,26 @@ tfoot td{font-weight:700;border-bottom:0;border-top:1px solid var(--ink)}
 .figs{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:20px}
 .fig b{display:block;font-size:36px;font-weight:700;letter-spacing:-.02em;line-height:1.1}
 .fig span{font-size:15px;color:var(--muted)}
-.erow{display:grid;grid-template-columns:230px minmax(0,1fr) 70px;gap:16px;align-items:center;padding:9px 0;border-bottom:1px solid var(--line);font-size:15px}
+.erow{display:grid;grid-template-columns:230px minmax(0,1fr) 140px;gap:16px;align-items:center;padding:9px 0;border-bottom:1px solid var(--line);font-size:15px}
 .erow b{display:inline-block;min-width:36px;color:var(--et)}
 .erow span:last-child{text-align:right}
 .erow .bar i{background:var(--et)}
-@media (max-width:560px){.erow{grid-template-columns:minmax(0,1fr) 70px}.erow .bar{grid-column:1/-1;grid-row:2}}
+@media (max-width:560px){.erow{grid-template-columns:minmax(0,1fr) 140px}.erow .bar{grid-column:1/-1;grid-row:2}}
+.alert{display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:6px 14px;align-items:baseline;padding:12px 0;border-bottom:1px solid var(--line)}
+@media (max-width:560px){.alert{grid-template-columns:auto minmax(0,1fr)}.alert .link{grid-column:2;justify-self:start}}
+.pace{position:relative;height:14px;background:var(--soft);border-radius:7px}
+.pace i{position:absolute;top:0;bottom:0;left:0;border-radius:7px}
+.pace .proj{background:var(--line)} .pace .sold{background:var(--accent)}
+.pace .mark{top:-6px;bottom:-6px;width:2px;background:var(--ink);border-radius:0}
+.recap{white-space:pre-line;background:var(--soft);border-radius:10px;padding:16px 18px;max-width:44em}
+.tv{display:flex;flex-direction:column;background:var(--ink);color:var(--bg);border-radius:14px;padding:clamp(18px,4vw,40px)}
+.tv h3{color:var(--bg);opacity:.7;margin-bottom:10px}
+.tvrow{display:grid;grid-template-columns:1.4em minmax(0,7em) minmax(0,1fr) auto minmax(0,7em);gap:clamp(10px,2vw,24px);align-items:center;padding:clamp(10px,1.6vw,18px) 0;border-top:1px solid rgba(255,255,255,.16);font-size:clamp(20px,3.4vw,38px);font-weight:600}
+.tvrow .n{opacity:.6} .tvrow .g{font-size:.5em;font-weight:500;opacity:.8;text-align:right}
+.tvrow .bar{background:rgba(255,255,255,.14);height:12px;border-radius:6px} .tvrow .bar i{background:var(--bg);border-radius:6px}
+.tvrow:first-of-type .bar i{background:#6ea0ff}
+.tvrow .dot{width:.4em;height:.4em;vertical-align:middle}
+@media (max-width:560px){.tvrow{grid-template-columns:1.4em minmax(0,1fr) auto}.tvrow .bar,.tvrow .g{display:none}}
 td input{width:76px;padding:6px 8px;text-align:right;font-size:15px}
 textarea{width:100%;height:140px;font:13px monospace;background:var(--soft);color:var(--ink);border:1px solid var(--line);border-radius:10px;padding:10px}
 .foot{font-size:14px;color:var(--muted);border-top:1px solid var(--line);padding-top:16px}
@@ -128,24 +143,30 @@ textarea{width:100%;height:140px;font:13px monospace;background:var(--soft);colo
 
 <script>
 (function(){
-var H=3600000, FORECAST=8, KEY='genesis-timeclock-v3', PIN='1234';
+var H=3600000, FORECAST=8, KEY='genesis-timeclock-v4', PIN='1234';
 var ECODES=[['E1','Moving vehicles'],['E2A','Quality control (paid)'],['E2B','Comeback repair'],['E3','Idle time'],['E4','Helping others'],['E5','Bldg. maint. / clean up'],['E6','Equipment maint.'],['E7','Supervisory time'],['E8','Leasehold improvements'],['E9','Break time'],['E10','On-site training'],['E11','On-job training']];
 var ENAME={}; ECODES.forEach(function(e){ENAME[e[0]]=e[1]});
 /* month-to-date hours taken from the June CompuTrek sheet */
 var MONTH={'31':{sold:29.27,avail:29.27,ro:29.27},'87':{sold:179.21,avail:157.17,ro:144.36},'33':{sold:192.88,avail:153.41,ro:141.31},'52':{sold:256.46,avail:157.20,ro:153.48},'15':{sold:51.61,avail:105.80,ro:64.86}};
-var S, toastTimer, ui={user:'owner',pick:null,err:'',viewAs:null,tab:'overview',period:'month',sort:'sold',confirm:false,finishing:false,copy:null};
+/* sold-hour goals from the sheet (daily, and for the days worked in June) */
+var GOAL={'87':{day:9.0,month:189.0},'33':{day:9.36,month:187.2},'52':{day:7.92,month:166.32}};
+/* monthly forecast from the sheet; the example treats today as working day 21 of 22 */
+var FC={target:761.70,day:21,days:22};
+/* example clocked hours for earlier days this week, Monday to Saturday */
+var WEEK={'31':[8.1,8.0,7.9,8.2,8.0,0],'87':[8.4,8.0,8.6,8.1,8.3,4.0],'33':[8.0,8.2,8.0,7.8,8.1,0],'52':[8.5,8.3,8.4,8.6,8.2,4.2],'15':[8.0,7.6,8.1,8.0,7.9,0]};
+var S, toastTimer, ui={comeback:false,user:'owner',pick:null,err:'',viewAs:null,tab:'overview',period:'month',sort:'sold',confirm:false,finishing:false,copy:null};
 
 function seed(){
   var now=Date.now(), t0=now-6.2*H, k=1, d=new Date(), open=new Date(d.getFullYear(),d.getMonth(),d.getDate(),7,30).getTime();
   /* during shop hours, stretch the example day so it starts at 7:30 AM */
   if(now-open>2.5*H&&now-open<10.5*H){t0=open;k=(now-open)/(6.2*H)}
   var at=function(h){return Math.round(t0+h*k*H)};
-  var s={seedAt:now,dayStart:t0,
+  var s={seedAt:now,dayStart:t0,rate:170,
     techs:[{id:'31',name:'Craig'},{id:'102',name:'Tech 102'},{id:'87',name:'Winstel'},{id:'104',name:'Tech 104'},{id:'33',name:'Ken'},{id:'107',name:'Tech 107'},{id:'52',name:'Eric'},{id:'15',name:'Jeremy'}],
     jobs:[
      {id:'48207',desc:'Roof A/C replacement',sold:3.5},{id:'48211',desc:'Slide-out motor',sold:null},
      {id:'48198',desc:'Water heater, no ignition',sold:2.5},{id:'48203',desc:'Reseal roof seams',sold:4.0},
-     {id:'48214',desc:'Awning fabric',sold:null},{id:'48209',desc:'Wheel bearing repack',sold:2.8},
+     {id:'48214',desc:'Awning fabric',sold:null},{id:'48209',desc:'Wheel bearing repack',sold:2.2},
      {id:'48212',desc:'LP leak test',sold:null},{id:'48201',desc:'Generator service',sold:3.0},
      {id:'48210',desc:'Brake controller install',sold:null},{id:'48206',desc:'',sold:null}],
     punches:[],entries:[]};
@@ -155,7 +176,7 @@ function seed(){
   P('31',0); N('31','ro','48207',0,2.6); D('48207','31',2.6); N('31','e','E9',2.6,2.85); N('31','ro','48211',2.85);
   P('87',0.05); N('87','ro','48198',0.05,1.9); D('48198','87',1.9); N('87','e','E4',1.9,2.4); N('87','ro','48203',2.4,5.3); D('48203','87',5.3); N('87','ro','48214',5.3);
   P('33',0,3.0,true); P('33',3.5); N('33','e','E1',0,0.4); N('33','ro','48209',0.4,3.0); D('48209','33',3.0); N('33','ro','48212',3.5);
-  P('52',0.1); N('52','ro','48201',0.1,2.2); D('48201','52',2.2); N('52','e','E9',2.2,2.45); N('52','e','E2B',2.45,3.6); N('52','ro','48210',3.6,5.6);
+  P('52',0.1); N('52','ro','48201',0.1,2.2); D('48201','52',2.2); N('52','e','E9',2.2,2.45); N('52','e','E2B',2.45,3.6); s.entries[s.entries.length-1].orig='48112'; N('52','ro','48210',3.6,5.6);
   P('15',0); N('15','e','E7',0,1.5); N('15','e','E5',1.5,2.3); N('15','ro','48206',2.3,4.4); D('48206','15',4.4); N('15','e','E11',4.4);
   return s;
 }
@@ -172,7 +193,8 @@ function blank(ms){return ms>30000?hrs(ms):''}
 function hms(ms){var s=Math.max(0,Math.floor(ms/1000)),h=Math.floor(s/3600),m=Math.floor(s%3600/60);s%=60;return h+':'+(m<10?'0':'')+m+':'+(s<10?'0':'')+s}
 function tm(t){return new Date(t).toLocaleTimeString([],{hour:'numeric',minute:'2-digit'})}
 function pct(n,d){return d>0?Math.round(n/d*100):null}
-function label(e){return e.kind=='ro'?'RO '+e.ref:e.ref+' '+ENAME[e.ref]}
+function label(e){return e.kind=='ro'?'RO '+e.ref:e.ref+' '+ENAME[e.ref]+(e.orig?' (for RO '+e.orig+')':'')}
+function money(h){return '$'+Math.round(h*S.rate).toLocaleString('en-US')}
 function me(){return ui.viewAs||ui.user}
 
 function status(id){
@@ -203,6 +225,7 @@ function activity(id){
 function perf(id,period){
   var x=stats(id),p={sold:x.sold,avail:x.avail/H,ro:x.ro/H},m=MONTH[id];
   if(period=='month'&&m){p.sold+=m.sold;p.avail+=m.avail;p.ro+=m.ro}
+  var g=GOAL[id]; p.goal=g?pct(p.sold,period=='month'?g.month+g.day:g.day):null;
   p.et=p.avail-p.ro; p.eff=p.ro>0.02?pct(p.sold,p.ro):null; p.prod=pct(p.ro,p.avail);
   return p;
 }
@@ -224,22 +247,30 @@ var ACT={
   in:function(){S.punches.push({tech:me(),in:Date.now(),out:null});say(tech(me()).name+' clocked in at '+tm(Date.now()))},
   out:function(){ if(!ui.confirm){ui.confirm=true;return 'keep'} endCur(me());openPunch(me()).out=Date.now();say(tech(me()).name+' clocked out at '+tm(Date.now()))},
   meal:function(){endCur(me());var p=openPunch(me());p.out=Date.now();p.meal=true;say(tech(me()).name+' is on an unpaid meal break')},
-  start:function(d){startEntry(me(),d.k,d.ref)},
+  start:function(d){var c=cur(me()); if(d.k=='e'&&d.ref=='E2B'&&!(c&&c.ref=='E2B')){ui.comeback=true;return 'keep'} startEntry(me(),d.k,d.ref)},
+  cbskip:function(){startEntry(me(),'e','E2B')},
+  viewas:function(d){ui.viewAs=d.id},
+  copymsg:function(){copyText(recap(),'Message copied.')},
+  copypay:function(){copyText(payTSV(),'Payroll hours copied. Paste them into Excel or Google Sheets.')},
   stop:function(){endCur(me());say('Paused. Pick the next RO or an E-time code.')},
   done:function(){ui.finishing=true;return 'keep'},
   finishskip:function(){complete(me(),null)},
   reset:function(){S=seed();say('Example day reset')},
-  copy:function(){var t=reportTSV(); ui.copy=null;
-    try{navigator.clipboard.writeText(t).then(function(){say('Report copied. Paste it into Excel or Google Sheets.')},function(){ui.copy=t;render()})}catch(e){ui.copy=t}}
+  copy:function(){copyText(reportTSV(),'Report copied. Paste it into Excel or Google Sheets.')}
 };
+function copyText(t,msg){ui.copy=null;
+  try{navigator.clipboard.writeText(t).then(function(){say(msg)},function(){ui.copy=t;render()})}catch(e){ui.copy=t}}
+function copyBox(){return ui.copy?'<div class="stack"><p class="small">Select all of this text, copy it, and paste it where you need it.</p><textarea id="tsv" readonly>'+esc(ui.copy)+'</textarea></div>':''}
 document.addEventListener('click',function(ev){
   var b=ev.target.closest('[data-act]'); if(!b)return;
-  var r=ACT[b.dataset.act](b.dataset); if(r!='keep'){ui.confirm=false;ui.finishing=false}
+  var r=ACT[b.dataset.act](b.dataset); if(r!='keep'){ui.confirm=false;ui.finishing=false;ui.comeback=false}
+  if(b.dataset.act=='tab')ui.copy=null;
   save();render();
 });
 document.addEventListener('change',function(ev){
   var el=ev.target;
   if(el.id=='viewas'){ui.viewAs=el.value||null;ui.confirm=ui.finishing=false;render()}
+  if(el.id=='rate'){var r=parseFloat(el.value);S.rate=r>0?r:170;save();render()}
   if(el.dataset.sold){var v=parseFloat(el.value);job(el.dataset.sold).sold=isNaN(v)?null:v;save();render();say('Sold hours saved for RO '+el.dataset.sold)}
 });
 document.addEventListener('submit',function(ev){
@@ -254,6 +285,7 @@ document.addEventListener('submit',function(ev){
     if(!j)S.jobs.push({id:ro,desc:v('note'),sold:null}); else if(v('note')&&!j.desc)j.desc=v('note');
     startEntry(me(),'ro',ro);
   }
+  if(f.dataset.form=='comeback'){startEntry(me(),'e','E2B');if(v('orig'))cur(me()).orig=v('orig').replace(/^ro\s*/i,'');ui.comeback=false}
   if(f.dataset.form=='finish'){var n=parseFloat(v('sold')); complete(me(),isNaN(n)?null:n); ui.finishing=false}
   save();render();
 });
@@ -292,6 +324,7 @@ function vTech(id){
        (mine.length?'<div class="row"><span class="muted small">Pick up where you left off:</span>'+mine.map(function(j){return '<button class="btn" data-act="start" data-k="ro" data-ref="'+esc(j.id)+'">RO '+esc(j.id)+'</button>'}).join('')+'</div>':'')+'</section>';
     h+='<section><h3>Not on a repair order? Pick an E-time code</h3><div class="egrid">'+ECODES.filter(function(e){return e[0]!='E3'}).map(function(e){var on=c&&c.kind=='e'&&c.ref==e[0];
         return '<button class="ebtn'+(on?' on':'')+'" data-act="start" data-k="e" data-ref="'+e[0]+'"><b>'+e[0]+'</b><span>'+e[1]+'</span></button>'}).join('')+'</div>'+
+       (ui.comeback?'<form class="row banner" data-form="comeback" style="align-items:flex-end"><label class="f">Which RO is this comeback for?<input id="orig" name="orig" type="text" inputmode="numeric" placeholder="Original RO number" autocomplete="off"></label><button class="btn primary" type="submit">Start comeback</button><button class="link" type="button" data-act="cbskip">I don’t know the RO</button></form>':'')+
        '<div class="row"><button class="btn" data-act="meal">Meal break (unpaid)</button><button class="btn danger" data-act="out">'+(ui.confirm?'Tap again to clock out':'Clock out for the day')+'</button></div></section>';
   }
   var log=[]; S.punches.forEach(function(p){if(p.tech!=id)return;log.push({at:p.in,h:'<span>'+tm(p.in)+'</span><span>Clocked in</span><span></span>'});if(p.out)log.push({at:p.out,h:'<span>'+tm(p.out)+'</span><span>'+(p.meal?'Meal break (unpaid)':'Clocked out')+'</span><span></span>'})});
@@ -309,22 +342,22 @@ function vOverview(){
   var rows=S.techs.map(function(t){return {t:t,p:perf(t.id,P)}}).filter(function(r){return r.p.avail>0.02});
   rows.sort(function(a,b){return (b.p[K]==null?-1:b.p[K])-(a.p[K]==null?-1:a.p[K])});
   var max=Math.max.apply(null,rows.map(function(r){return r.p.sold}).concat([0.01])),top=rows[0],lead='';
-  var KL={sold:'sold hours',eff:'efficiency',prod:'productivity'};
+  var KL={sold:'sold hours',eff:'efficiency',prod:'productivity',goal:'percent of goal'};
   if(top){lead='<b>'+esc(top.t.name)+'</b> is the top performer '+(P=='month'?'this month':'today')+' by '+KL[K]+': '+top.p.sold.toFixed(1)+' sold hours'+(top.p.eff!=null?' at '+top.p.eff+'% efficiency':'')+'.';
     var low=rows.slice().sort(function(a,b){return a.p.prod-b.p.prod})[0];
-    if(low&&low!=top&&low.p.prod<80)lead+=' <b>'+esc(low.t.name)+'</b> needs a look: only '+low.p.prod+'% of shop time went to repair orders, with '+low.p.et.toFixed(1)+' hours of E-time.'}
+    if(low&&low!=top&&low.p.prod<80)lead+=' <b>'+esc(low.t.name)+'</b> needs a look: only '+low.p.prod+'% of shop time went to repair orders, with '+low.p.et.toFixed(1)+' hours of E-time, about '+money(low.p.et)+' of unbilled shop time.'}
   var seg=function(act,cur,opts){return '<div class="seg">'+opts.map(function(o){return '<button data-act="'+act+'" data-v="'+o[0]+'" aria-pressed="'+(cur==o[0])+'">'+o[1]+'</button>'}).join('')+'</div>'};
   var n={ro:0,e:0,idle:0,all:0}; S.techs.forEach(function(t){var s=status(t.id);if(s in n){n[s]++;n.all++}});
   var pos=function(a,b){return 'left:'+((a-t0)/span*100).toFixed(2)+'%;width:'+(((b||now)-a)/span*100).toFixed(2)+'%'};
-  return '<section><div class="row spread"><h2>Top performers</h2><div class="row">'+seg('period',P,[['today','Today'],['month','This month']])+seg('sort',K,[['sold','Sold hours'],['eff','Efficiency'],['prod','Productivity']])+'</div></div>'+
+  return alerts()+'<section><div class="row spread"><h2>Top performers</h2><div class="row">'+seg('period',P,[['today','Today'],['month','This month']])+seg('sort',K,[['sold','Sold hours'],['eff','Efficiency'],['prod','Productivity'],['goal','Goal']])+'</div></div>'+
   '<p class="lead">'+lead+'</p>'+
-  '<div class="scroll"><table class="rank"><thead><tr><th></th><th class="l">Technician</th><th class="l">Sold hours</th><th></th><th>Efficiency</th><th>Productivity</th><th>E-time</th></tr></thead><tbody>'+
+  '<div class="scroll"><table class="rank"><thead><tr><th></th><th class="l">Technician</th><th class="l">Sold hours</th><th></th><th>Efficiency</th><th>Productivity</th><th>Of goal</th><th>E-time cost</th></tr></thead><tbody>'+
   rows.map(function(r,i){var p=r.p;return '<tr class="'+(i==0?'first':'')+'"><td class="n">'+(i+1)+'</td><td class="l name">'+esc(r.t.name)+(i==0?'<span class="tag">Top performer</span>':'')+'</td>'+
     '<td class="barcell"><div class="bar"><i style="width:'+(p.sold/max*100).toFixed(1)+'%"></i></div></td><td><b>'+p.sold.toFixed(1)+'</b></td>'+
-    '<td class="'+grade(p.eff,100,85)+'">'+(p.eff==null?'<span class="muted">n/a</span>':p.eff+'%')+'</td><td class="'+grade(p.prod,90,80)+'">'+p.prod+'%</td><td>'+p.et.toFixed(1)+' hr</td></tr>'}).join('')+
+    '<td class="'+grade(p.eff,100,85)+'">'+(p.eff==null?'<span class="muted">n/a</span>':p.eff+'%')+'</td><td class="'+grade(p.prod,90,80)+'">'+p.prod+'%</td><td class="'+grade(p.goal,100,90)+'">'+(p.goal==null?'<span class="muted">No goal</span>':p.goal+'%')+'</td><td>'+money(p.et)+'<span class="muted"> &middot; '+p.et.toFixed(1)+' hr</span></td></tr>'}).join('')+
   '</tbody></table></div>'+
-  '<p class="muted small" style="max-width:44em"><b>Sold hours</b> are the billed hours on finished repair orders. <b>Efficiency</b> is sold hours divided by hours clocked on repair orders, so above 100% means beating the book. <b>Productivity</b> is the share of shop time spent on repair orders instead of E-time.'+(P=='month'?' Month figures are the June totals from the CompuTrek sheet plus today’s example punches.':'')+'</p></section>'+
-  shop(rows,P)+
+  '<p class="muted small" style="max-width:44em"><b>Sold hours</b> are the billed hours on finished repair orders. <b>Efficiency</b> is sold hours divided by hours clocked on repair orders, so above 100% means beating the book. <b>Productivity</b> is the share of shop time spent on repair orders instead of E-time.'+(P=='month'?' <b>Of goal</b> compares sold hours with the tech\u2019s target from the sheet. <b>E-time cost</b> is E-time hours at the shop labor rate. Month figures are the June totals from the CompuTrek sheet plus today’s example punches.':'')+'</p></section>'+
+  forecast()+shop(rows,P)+
   '<section><div class="row spread"><h2>Right now</h2><span class="muted small">'+n.all+' of '+S.techs.length+' clocked in &middot; '+n.ro+' on repair orders &middot; '+n.e+' on E-time &middot; '+n.idle+' idle</span></div><div>'+
   S.techs.map(function(t){var s=status(t.id),a=activity(t.id);
     return '<div class="live"><b>'+esc(t.name)+'</b>'+st(s)+'<div class="track">'+
@@ -333,15 +366,74 @@ function vOverview(){
       '</div><span style="text-align:right">'+(a?'<span data-since="'+a.since+'"></span>':'')+'</span></div>'}).join('')+
   '</div><div class="row small muted" style="gap:18px"><span><i class="dot ro"></i> Repair order</span><span><i class="dot e"></i> E-time</span><span><i class="dot idle"></i> Idle</span><span>Bars run from '+tm(t0)+' to now</span></div></section>';
 }
+function alertItems(){
+  var now=Date.now(),a=[],off=[];
+  S.techs.forEach(function(t){var s=status(t.id);
+    if(s=='idle'){var ac=activity(t.id),m=Math.floor((now-ac.since)/60000); if(m>=15)a.push({c:'idle',t:t.name+' has been clocked in with no job for '+m+' minutes, about '+money((now-ac.since)/H)+' of shop time so far.',b:['viewas',t.id,'View as '+t.name]})}
+    if(s=='off')off.push(t.name)});
+  S.jobs.forEach(function(j){var cl=jobClocked(j.id)/H;
+    if(j.status=='done'&&j.sold==null)a.push({c:'e',t:'RO '+j.id+' is finished but has no sold hours, so '+tech(j.doneBy).name+' gets no credit for it yet.',b:['tab','ros','Add sold hours']});
+    else if(j.status=='done'&&cl>j.sold*1.1)a.push({c:'idle',t:'RO '+j.id+' ran '+(cl-j.sold).toFixed(1)+' hours over: '+cl.toFixed(1)+' clocked against '+j.sold.toFixed(1)+' sold ('+tech(j.doneBy).name+').'});
+    else if(j.status!='done'&&cl>3)a.push({c:'e',t:'RO '+j.id+' is still open with '+cl.toFixed(1)+' hours clocked on it.'})});
+  S.entries.forEach(function(e){if(e.kind=='e'&&e.ref=='E2B'&&(e.end||now)-e.start>60000)a.push({c:'e',t:tech(e.tech).name+' spent '+hrs((e.end||now)-e.start)+' hours on a comeback'+(e.orig?' for RO '+e.orig:'')+', about '+money(((e.end||now)-e.start)/H)+' of unbilled time.'})});
+  if(off.length)a.push({c:'',t:off.join(', ')+(off.length>1?' have':' has')+' not clocked in today.'});
+  return a;
+}
+function alerts(){
+  var a=alertItems(); if(!a.length)return '';
+  return '<section><h2>Needs your attention</h2><div>'+a.map(function(x){return '<div class="alert"><i class="dot '+x.c+'"></i><span>'+esc(x.t)+'</span>'+(x.b?'<button class="link" data-act="'+x.b[0]+'" data-id="'+x.b[1]+'" data-v="'+x.b[1]+'">'+esc(x.b[2])+'</button>':'<span></span>')+'</div>'}).join('')+'</div></section>';
+}
+function forecast(){
+  var sold=0; S.techs.forEach(function(t){sold+=perf(t.id,'month').sold});
+  var proj=sold/FC.day*FC.days,gap=proj-FC.target,left=FC.days-FC.day,need=(FC.target-sold)/left,avg=sold/FC.day,max=Math.max(proj,FC.target)*1.04;
+  var w=function(v){return (v/max*100).toFixed(1)+'%'};
+  return '<section><h2>Month-end forecast</h2><p class="lead">At this pace the shop finishes the month at <b>'+proj.toFixed(0)+' sold hours</b>, '+
+    (gap<0?'<b class="bad">'+Math.abs(gap).toFixed(0)+' short</b>':'<b class="good">'+gap.toFixed(0)+' ahead</b>')+' of the '+FC.target.toFixed(0)+'-hour forecast'+
+    (gap<0?', about '+money(-gap)+' in labor sales. Hitting the forecast takes '+need.toFixed(1)+' sold hours on each remaining day; the daily average so far is '+avg.toFixed(1)+'.':'.')+'</p>'+
+    '<div class="pace"><i class="proj" style="width:'+w(proj)+'"></i><i class="sold" style="width:'+w(sold)+'"></i><i class="mark" style="left:'+w(FC.target)+'"></i></div>'+
+    '<div class="row small muted" style="gap:18px"><span><i class="dot" style="background:var(--accent)"></i> Sold so far: '+sold.toFixed(0)+'</span><span><i class="dot" style="background:var(--line)"></i> Projected: '+proj.toFixed(0)+'</span><span>Line: forecast, '+FC.target.toFixed(0)+'</span><span>Example assumes working day '+FC.day+' of '+FC.days+'</span></div></section>';
+}
 function shop(rows,P){
   var t={sold:0,avail:0,ro:0}; rows.forEach(function(r){t.sold+=r.p.sold;t.avail+=r.p.avail;t.ro+=r.p.ro});
   var eff=t.ro>0.02?pct(t.sold,t.ro):null,prod=pct(t.ro,t.avail),e=reportRows().pop().x.e;
   var codes=ECODES.map(function(c){return {c:c,ms:e[c[0]]||0}}).filter(function(x){return x.ms>30000}).sort(function(a,b){return b.ms-a.ms}),max=codes.length?codes[0].ms:1;
   var fig=function(v,l,cls){return '<div class="fig"><b class="'+(cls||'')+'">'+v+'</b><span>'+l+'</span></div>'};
-  return '<section><h2>The shop '+(P=='month'?'this month':'today')+'</h2><div class="figs">'+
-    fig(t.sold.toFixed(1),'sold hours')+fig(eff==null?'n/a':eff+'%','efficiency',grade(eff,100,85))+fig(prod==null?'n/a':prod+'%','productivity',grade(prod,90,80))+fig((t.avail-t.ro).toFixed(1),'hours of E-time')+'</div>'+
-    (codes.length?'<h3 style="margin-top:8px">Where today\u2019s E-time went</h3><div>'+codes.map(function(x){
-      return '<div class="erow"><span><b>'+x.c[0]+'</b> '+x.c[1]+'</span><div class="bar"><i style="width:'+(x.ms/max*100).toFixed(1)+'%"></i></div><span>'+hrs(x.ms)+' hr</span></div>'}).join('')+'</div>':'')+'</section>';
+  return '<section><div class="row spread"><h2>The shop '+(P=='month'?'this month':'today')+'</h2><label class="row small muted" style="gap:8px">Labor rate $<input id="rate" type="text" inputmode="decimal" value="'+S.rate+'" style="width:84px;padding:7px 10px">per hour</label></div><div class="figs">'+
+    fig(t.sold.toFixed(1),'sold hours')+fig(eff==null?'n/a':eff+'%','efficiency',grade(eff,100,85))+fig(prod==null?'n/a':prod+'%','productivity',grade(prod,90,80))+fig(money(t.avail-t.ro),'of E-time ('+(t.avail-t.ro).toFixed(1)+' hours)','mid')+'</div>'+
+    (codes.length?'<h3 style="margin-top:8px">Where today’s E-time went</h3><div>'+codes.map(function(x){
+      return '<div class="erow"><span><b>'+x.c[0]+'</b> '+x.c[1]+'</span><div class="bar"><i style="width:'+(x.ms/max*100).toFixed(1)+'%"></i></div><span>'+money(x.ms/H)+'<span class="muted"> &middot; '+hrs(x.ms)+' hr</span></span></div>'}).join('')+'</div>':'')+'</section>';
+}
+function recap(){
+  var rows=S.techs.map(function(t){return {t:t,p:perf(t.id,'today')}}).filter(function(r){return r.p.avail>0.02});
+  var t={sold:0,avail:0,ro:0}; rows.forEach(function(r){t.sold+=r.p.sold;t.avail+=r.p.avail;t.ro+=r.p.ro});
+  var top=rows.slice().sort(function(a,b){return b.p.sold-a.p.sold})[0],e=reportRows().pop().x.e,et=t.avail-t.ro;
+  var big=ECODES.map(function(c){return {c:c,ms:e[c[0]]||0}}).sort(function(a,b){return b.ms-a.ms})[0];
+  var L=['Genesis shop recap for '+new Date().toLocaleDateString([],{weekday:'long',month:'long',day:'numeric'})+'.',
+    rows.length+' of '+S.techs.length+' techs clocked in. Sold '+t.sold.toFixed(1)+' hours at '+(pct(t.sold,t.ro)||0)+'% efficiency and '+(pct(t.ro,t.avail)||0)+'% productivity.'];
+  if(top&&top.p.sold>0)L.push('Top performer: '+top.t.name+' with '+top.p.sold.toFixed(1)+' sold hours.');
+  L.push('E-time: '+et.toFixed(1)+' hours, about '+money(et)+'.'+(big.ms>30000?' Biggest bucket: '+big.c[0]+' '+big.c[1]+', '+hrs(big.ms)+' hours.':''));
+  var w=alertItems().filter(function(x){return x.c}).slice(0,3); if(w.length)L.push('Watch:\n'+w.map(function(x){return '- '+x.t}).join('\n'));
+  return L.join('\n');
+}
+function payRows(){
+  var di=(new Date().getDay()+6)%7;
+  return S.techs.map(function(t){var w=WEEK[t.id]||[0,0,0,0,0,0],d=[],tot=0;
+    for(var i=0;i<6;i++){var v=i<di?w[i]:i==di?stats(t.id).avail/H:null;d.push(v);tot+=v||0}
+    return {name:t.id+' '+t.name,d:d,tot:tot}});
+}
+var DAYS=['Mon','Tue','Wed','Thu','Fri','Sat'];
+function payTSV(){return [['Technician'].concat(DAYS,['Total','Regular','Overtime']).join('\t')].concat(payRows().map(function(r){
+  return [r.name].concat(r.d.map(function(v){return v==null?'':v.toFixed(2)}),[r.tot.toFixed(2),Math.min(40,r.tot).toFixed(2),Math.max(0,r.tot-40).toFixed(2)]).join('\t')})).join('\n')}
+function vPay(){
+  return '<section><div class="row spread"><div><h2>Payroll hours this week</h2><p class="muted small" style="margin-top:6px">Hours clocked in to the shop, with unpaid meal breaks left out. Earlier days are examples; today is live.</p></div><button class="btn" data-act="copypay">Copy for payroll</button></div>'+copyBox()+
+  '<div class="scroll"><table><thead><tr><th>Technician</th>'+DAYS.map(function(d){return '<th>'+d+'</th>'}).join('')+'<th>Total</th><th>Regular</th><th>Overtime</th></tr></thead><tbody>'+
+  payRows().map(function(r){var ot=Math.max(0,r.tot-40);return '<tr><td>'+esc(r.name)+'</td>'+r.d.map(function(v){return '<td>'+(v?v.toFixed(2):'')+'</td>'}).join('')+
+    '<td><b>'+r.tot.toFixed(2)+'</b></td><td>'+Math.min(40,r.tot).toFixed(2)+'</td><td class="'+(ot>0?'bad':'')+'">'+(ot>0?ot.toFixed(2):'')+'</td></tr>'}).join('')+'</tbody></table></div></section>';
+}
+function vTV(){
+  var rows=S.techs.map(function(t){return {t:t,p:perf(t.id,'month')}}).filter(function(r){return r.p.avail>0.02}).sort(function(a,b){return b.p.sold-a.p.sold}),max=rows.length?rows[0].p.sold:1;
+  return '<section><div><h2>Shop TV board</h2><p class="muted small" style="margin-top:6px">A large leaderboard for a screen on the shop wall. It shows sold hours and goals only, with no dollar figures.</p></div><div class="tv"><h3>Sold hours this month</h3>'+
+  rows.map(function(r,i){return '<div class="tvrow"><span class="n">'+(i+1)+'</span><span class="nm"><i class="dot '+status(r.t.id)+'"></i> '+esc(r.t.name)+'</span><div class="bar"><i style="width:'+(r.p.sold/max*100).toFixed(1)+'%"></i></div><b>'+r.p.sold.toFixed(1)+'</b><span class="g">'+(r.p.goal==null?'':r.p.goal+'% of goal')+'</span></div>'}).join('')+'</div></section>';
 }
 function reportRows(){
   var tot={e:{},etot:0,sold:0,avail:0,ro:0};
@@ -357,7 +449,7 @@ function vReport(){
       '<td><b>'+blank(x.etot)+'</b></td><td>'+(x.sold?x.sold.toFixed(2):'')+'</td><td>'+blank(x.avail)+'</td><td>'+blank(x.ro)+'</td>'+
       '<td class="'+grade(p,90,80)+'">'+(p==null?'':p+'%')+'</td><td class="'+grade(ef,100,85)+'">'+(ef==null?'':ef+'%')+'</td><td>'+(d==null?'':d+'%')+'</td></tr>'};
   return '<section><div class="row spread"><div><h2>Daily time control summary</h2><span class="muted small">'+new Date().toLocaleDateString([],{weekday:'long',month:'long',day:'numeric',year:'numeric'})+' &middot; forecast '+FORECAST.toFixed(2)+' hours per tech</span></div><button class="btn" data-act="copy">Copy for spreadsheet</button></div>'+
-  (ui.copy?'<div class="stack"><p class="small">Select all of this text, copy it, and paste it into Excel or Google Sheets.</p><textarea id="tsv" readonly>'+esc(ui.copy)+'</textarea></div>':'')+
+  copyBox()+'<div class="stack"><div class="row spread"><h3>End-of-day message</h3><button class="link" data-act="copymsg">Copy message</button></div><p class="recap">'+esc(recap())+'</p><p class="muted small">The live version can text or email this to you when the last tech clocks out.</p></div>'+
   '<div class="scroll"><table><thead><tr><th>Technician</th>'+ECODES.map(function(c){return '<th>'+c[0]+'<small>'+c[1]+'</small></th>'}).join('')+
   '<th>A<small>Total E-time</small></th><th>B<small>Sold hours paid</small></th><th>C<small>Available hours</small></th><th>D<small>Time producing</small></th><th>D/C<small>Productivity</small></th><th>B/D<small>Efficiency</small></th><th>D/E<small>Door-open productivity</small></th></tr></thead>'+
   '<tbody>'+rows.slice(0,-1).map(tr).join('')+'</tbody><tfoot>'+tr(rows[rows.length-1])+'</tfoot></table></div>'+
@@ -381,7 +473,7 @@ function vROs(){
       '<td class="'+(v!=null&&j.status=='done'?(v>0?'bad':'good'):'')+'">'+(v==null?'':(v>0?'+':'')+v.toFixed(2))+'</td></tr>'}).join('')+'</tbody></table></div></section>';
 }
 function vOwner(){
-  var T=[['overview','Overview'],['report','Daily report'],['ros','Repair orders']],V={overview:vOverview,report:vReport,ros:vROs};
+  var T=[['overview','Overview'],['report','Daily report'],['ros','Repair orders'],['pay','Payroll'],['tv','Shop TV']],V={overview:vOverview,report:vReport,ros:vROs,pay:vPay,tv:vTV};
   return '<nav class="tabs" role="tablist">'+T.map(function(t){return '<button role="tab" aria-selected="'+(ui.tab==t[0])+'" data-act="tab" data-v="'+t[0]+'">'+t[1]+'</button>'}).join('')+'</nav>'+V[ui.tab]();
 }
 
@@ -393,7 +485,7 @@ function render(){
   } else w='<span class="small muted" id="clk"></span>';
   document.getElementById('who').innerHTML=w;
   document.getElementById('view').innerHTML=!ui.user?vLogin():(ui.user=='owner'&&!ui.viewAs)?vOwner():vTech(me());
-  var f=document.getElementById('tsv')||document.getElementById('pin')||document.getElementById('sold'); if(f){f.focus();if(f.select)f.select()}
+  var f=document.getElementById('tsv')||document.getElementById('pin')||document.getElementById('sold')||document.getElementById('orig'); if(f){f.focus();if(f.select)f.select()}
   tick();
 }
 function tick(){
@@ -403,6 +495,6 @@ function tick(){
 }
 S=load(); render();
 setInterval(tick,1000);
-setInterval(function(){ var a=document.activeElement; if(ui.user=='owner'&&!ui.viewAs&&ui.tab=='overview'&&!(a&&/INPUT|SELECT|TEXTAREA/.test(a.tagName)))render() },30000);
+setInterval(function(){ var a=document.activeElement; if(ui.user=='owner'&&!ui.viewAs&&(ui.tab=='overview'||ui.tab=='tv')&&!(a&&/INPUT|SELECT|TEXTAREA/.test(a.tagName)))render() },30000);
 })();
 </script>
