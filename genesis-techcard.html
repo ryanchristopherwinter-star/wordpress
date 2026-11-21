@@ -268,7 +268,7 @@ function locked(w){return !!w.qc}
 /* who may change what on a worksheet line */
 function perm(w,i){
   var l=w.lines[i],adv=isAdv(),own=w.tech==ui.user,lk=locked(w),cl=lineClocked(w,i),mine=own&&l.by=='tech'&&l.sold==null;
-  return {desc:!lk&&(adv||(mine&&!cl&&!l.done)),del:!lk&&!cl&&!l.done&&(adv||mine),note:!lk&&(adv||own),reopen:!lk&&l.done&&(adv||own)};
+  return {desc:!lk&&(adv||(mine&&!l.done)),del:!lk&&!cl&&!l.done&&(adv||mine),note:!lk&&(adv||own),reopen:!lk&&l.done&&(adv||own)};
 }
 function partPerm(w,p){return !locked(w)&&(isAdv()||(w.tech==ui.user&&!p.sold))}
 function confirmStep(k){ if(ui.confirm!=k){ui.confirm=k;return false} return true }
@@ -307,10 +307,10 @@ function checkPunch(tid,id,pin,pout){
 function endCur(id){var c=cur(id); if(c)c.off=Date.now()}
 function punchOn(id,kind,ref,line){
   if(!openPunch(id))return say('Punch in for the day first.');
-  if(kind=='ro'){var w=ws(ref),l=w.lines[line]; if(locked(w)||l.done)return say('That line is already checked off.'); if(l.sold==null)return say('That line is waiting for the advisor to approve it.')}
+  if(kind=='ro'){var w=ws(ref),l=w.lines[line]; if(locked(w)||l.done)return say('That line is already checked off.');}
   var c=cur(id); if(c&&c.kind==kind&&(kind=='e'?c.code==ref:(c.ws==ref&&c.line==line)))return;
   endCur(id); S.rows.push({id:uid('r'),tech:id,kind:kind,ws:kind=='ro'?ref:null,line:kind=='ro'?line:null,code:kind=='e'?ref:null,on:Date.now(),off:null});
-  say('Punched on '+(kind=='ro'?'RO '+ws(ref).ro+', line '+(line+1):ref+' '+ENAME[ref]));
+  say('Punched on '+(kind=='ro'?'RO '+ws(ref).ro+', line '+(line+1)+(ws(ref).lines[line].sold==null?'. Not approved yet, so no flat rate hours until the advisor adds sold hours.':''):ref+' '+ENAME[ref]));
 }
 var ACT={
   pick:function(d){ui.pick=d.id;ui.err=''}, unpick:function(){ui.pick=null},
@@ -355,7 +355,7 @@ var ACT={
   rowset:function(d){var r=row(ui.rowsel); if(!r||r.tech!=ui.user)return; if(rowChecks(r).length)return say('Reopen the checked-off line first.');
     var old=jobName(r);
     if(d.code){r.kind='e';r.code=d.code;r.ws=null;r.line=null}
-    else{var w=ws(d.ws),l=w.lines[+d.line]; if(w.tech!=ui.user||locked(w)||l.sold==null||(!r.off&&l.done))return say('That job is not available.'); r.kind='ro';r.ws=w.id;r.line=+d.line;r.code=null}
+    else{var w=ws(d.ws),l=w.lines[+d.line]; if(w.tech!=ui.user||locked(w)||(!r.off&&l.done))return say('That job is not available.'); r.kind='ro';r.ws=w.id;r.line=+d.line;r.code=null}
     r.edited=true; logIt(r.tech,'changed row '+rowNo(r)+' ('+span(r.on,r.off)+') from '+old+' to '+jobName(r)); clearEdits(); say('Row changed to '+jobName(r)+'. Times stayed the same.')},
   rowdel:function(){var r=row(ui.rowsel); if(!r)return; var adv=isAdv();
     if(!adv&&(r.tech!=ui.user||(r.off||Date.now())-r.on>=SHORT))return say('Only your advisor can remove this row.');
@@ -490,7 +490,7 @@ function rowPanelTech(id){
   var ch=rowChecks(r),open=!r.off,h='<div class="panel stack narrow" id="editpanel">'+panelHead('Row '+rowNo(r)+': '+esc(jobName(r))+', '+span(r.on,r.off));
   if(ch.length)h+='<p class="small">Line '+(ch[0].i+1)+' of RO '+esc(ch[0].w.ro)+' was checked off during this row. Reopen that line on the worksheet before changing this row.</p><div class="row"><button class="btn sm" data-act="open" data-id="'+ch[0].w.id+'">Open the worksheet</button></div>';
   else{
-    var L=[]; S.ws.forEach(function(w){ if(w.tech!=id||locked(w))return; w.lines.forEach(function(l,i){ if(l.sold==null||(open&&l.done)||(r.kind=='ro'&&r.ws==w.id&&r.line==i))return;
+    var L=[]; S.ws.forEach(function(w){ if(w.tech!=id||locked(w))return; w.lines.forEach(function(l,i){ if((open&&l.done)||(r.kind=='ro'&&r.ws==w.id&&r.line==i))return;
       L.push('<button data-act="rowset" data-ws="'+w.id+'" data-line="'+i+'"><b>RO '+esc(w.ro)+' &middot; line '+(i+1)+'</b>'+esc(l.desc)+'</button>')})});
     ECODES.forEach(function(e){ if(r.code!=e[0])L.push('<button data-act="rowset" data-code="'+e[0]+'"><b>'+e[0]+'</b>'+e[1]+'</button>')});
     h+='<p class="small"><b>Punched on the wrong job?</b> Pick the right one. The on and off times stay the same.</p><div class="pickgrid">'+L.join('')+'</div>';
@@ -506,7 +506,7 @@ function vTechCard(){
     h+='<div class="row"><button class="btn primary big" data-act="sheet" data-v="job">Punch on a job</button><button class="btn big" data-act="sheet" data-v="e">E-time</button></div>'+
        '<div class="row"><button class="btn" data-act="one" data-code="E-9" style="flex:1">10-minute break (E-9)</button>'+(c?'<button class="btn" data-act="off" style="flex:1">Punch off</button>':'')+'</div>';
     if(c&&c.kind=='ro')h+='<button class="btn" data-act="sheet" data-v="done">Check off RO '+esc(ws(c.ws).ro)+', line '+(c.line+1)+'</button>';
-    if(ui.sheet=='job'){var L=[];S.ws.forEach(function(w){if(w.tech==id&&!locked(w))w.lines.forEach(function(l,i){if(!l.done&&l.sold!=null)L.push('<button data-act="on" data-ws="'+w.id+'" data-line="'+i+'"><b>RO '+esc(w.ro)+' &middot; line '+(i+1)+'</b>'+esc(l.desc)+'</button>')})});
+    if(ui.sheet=='job'){var L=[];S.ws.forEach(function(w){if(w.tech==id&&!locked(w))w.lines.forEach(function(l,i){if(!l.done)L.push('<button data-act="on" data-ws="'+w.id+'" data-line="'+i+'"><b>RO '+esc(w.ro)+' &middot; line '+(i+1)+'</b>'+esc(l.desc)+(l.sold==null?' <span class="warn">(not approved yet)</span>':'')+'</button>')})});
       h+='<div class="panel stack"><h3>Which job?</h3>'+(L.length?'<div class="pickgrid">'+L.join('')+'</div>':'<p class="small">No open work is assigned to you. See your advisor.</p>')+'</div>'}
     if(ui.sheet=='e')h+='<div class="panel stack"><h3>Which E-time code?</h3><div class="pickgrid">'+ECODES.map(function(e){return '<button data-act="one" data-code="'+e[0]+'"><b>'+e[0]+'</b>'+e[1]+'</button>'}).join('')+'</div></div>';
     if(ui.sheet=='done'&&c&&c.kind=='ro')h+=doneForm(c);
@@ -521,6 +521,8 @@ function doneForm(c){var l=ws(c.ws).lines[c.line];
 /* ---------- worksheet ---------- */
 function wsStatus(w){
   var done=w.lines.filter(function(l){return l.done}).length,need=w.lines.filter(function(l){return l.sold==null}).length,parts=w.parts.filter(function(p){return !p.sold}).length,f=[];
+  var early=w.lines.filter(function(l,i){return l.sold==null&&lineClocked(w,i)}).length;
+  if(early)f.push('<span class="bad">'+early+' unapproved line'+(early>1?'s have':' has')+' time clocked</span>');
   if(need)f.push('<span class="warn">'+need+' line'+(need>1?'s need':' needs')+' sold hours</span>');
   if(parts)f.push('<span class="warn">'+parts+' part request'+(parts>1?'s':'')+' open</span>');
   if(w.lines.length&&done==w.lines.length)f.push(w.qc?'<span class="good">QC signed</span>':'<span class="warn">Ready for QC</span>');
@@ -547,8 +549,8 @@ function vWork(w){
     if(ed=='desc')a.push('<form class="row" data-form="edesc" '+at+' style="flex:1 1 100%"><input class="field" id="edesc" name="desc" value="'+esc(l.desc)+'" autocomplete="off" aria-label="Work description" style="flex:1 1 200px"><button class="btn sm primary" type="submit">Save</button><button class="link" type="button" data-act="canceledit">Cancel</button></form>');
     if(ed=='note')a.push('<form class="stack" data-form="enote" '+at+' style="flex:1 1 100%;gap:8px"><textarea class="field" id="enote" name="note" placeholder="What you did and what you found" aria-label="Notes for line '+(i+1)+'">'+esc(l.note)+'</textarea><div class="row"><button class="btn sm primary" type="submit">Save notes</button><button class="link" type="button" data-act="canceledit">Cancel</button></div></form>');
     else if(l.note)a.push('<span style="flex:1 1 100%"><b>Notes:</b> '+esc(l.note)+'</span>');
-    if(l.sold==null)a.push('<span class="warn" style="flex:1 1 100%">'+(adv?'Recommended by the tech. Enter sold hours once the customer approves.':'Waiting for the advisor to approve this and add sold hours.')+'</span>');
-    if(!adv&&own&&!l.done&&!lk&&l.sold!=null){
+    if(l.sold==null)a.push('<span class="warn" style="flex:1 1 100%">'+(adv?'Recommended by the tech'+(tt>0.004?', who has already clocked '+num(tt)+' hours on it':'')+'. Enter sold hours once the customer approves.':'Not approved yet. You can start the work, but flat rate hours are only credited once the advisor adds sold hours.')+'</span>');
+    if(!adv&&own&&!l.done&&!lk){
       if(on&&ui.sheet=='done')a.push(doneForm(c));
       else a.push(on?'<span class="good"><b>You are punched on this line.</b></span><button class="btn sm primary" data-act="sheet" data-v="done">Check off</button>':'<button class="btn sm primary" data-act="on" data-ws="'+w.id+'" data-line="'+i+'">Punch on</button>');
     }
@@ -565,7 +567,7 @@ function vWork(w){
      (adv?'<label class="f" style="flex:0 1 110px">Sold hours<input class="field" id="al-sold" name="sold" inputmode="decimal" autocomplete="off"></label>':'<input type="hidden" name="sold" value="">')+'<button class="btn" type="submit">Add line</button>'+
      (adv?'<button class="btn primary" type="button" data-act="qc" data-ws="'+w.id+'">Sign QC</button>':'')+'</form>';
   else if(adv)h+='<div class="row"><button class="btn" data-act="unqc" data-ws="'+w.id+'">'+(ui.confirm=='unqc'?'Tap again to remove the QC sign-off':'Remove QC sign-off to make changes')+'</button></div>';
-  if(!adv&&!lk&&own)h+='<p class="small muted">You can edit or delete work you recommended until the advisor approves it. You can edit your notes and reopen a line until QC is signed.</p>';
+  if(!adv&&!lk&&own)h+='<p class="small muted">You can edit work you recommended until the advisor approves it, and delete it if no time has been clocked on it. You can edit your notes and reopen a line until QC is signed.</p>';
   return h;
 }
 function vParts(w){
@@ -640,7 +642,7 @@ function errLine(){return ui.formErr?'<p class="small bad" role="alert">'+esc(ui
 function rowPanelAdv(tid){
   var isNew=ui.rowsel=='new',r=isNew?null:row(ui.rowsel); if(!isNew&&(!r||r.tech!=tid))return '';
   var ch=r?rowChecks(r):[],opts='',val=r?(r.kind=='ro'?'ro|'+r.ws+'|'+r.line:'e|'+r.code):'';
-  S.ws.forEach(function(w){ if(w.tech!=tid)return; w.lines.forEach(function(l,i){var v='ro|'+w.id+'|'+i; if(v!=val&&(locked(w)||l.sold==null))return;
+  S.ws.forEach(function(w){ if(w.tech!=tid)return; w.lines.forEach(function(l,i){var v='ro|'+w.id+'|'+i; if(v!=val&&locked(w))return;
     opts+='<option value="'+v+'"'+(v==val?' selected':'')+'>RO '+esc(w.ro)+' line '+(i+1)+': '+esc(l.desc)+'</option>'})});
   ECODES.forEach(function(e){var v='e|'+e[0];opts+='<option value="'+v+'"'+(v==val?' selected':'')+'>'+e[0]+' '+e[1]+'</option>'});
   return '<form class="panel stack narrow" id="editpanel" data-form="rowedit">'+panelHead(isNew?'Add a row for '+esc(tech(tid).name):'Correct row '+rowNo(r)+': '+esc(jobName(r)))+
