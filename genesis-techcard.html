@@ -239,7 +239,7 @@ var ECODES=[['E-1','Moving vehicles'],['E-2A','Quality control (paid)'],['E-2B',
 var ENAME={}; ECODES.forEach(function(e){ENAME[e[0]]=e[1]});
 var MON=['JAN','FEB','MAR','APR','MAY','JUN','JUL','AUG','SEP','OCT','NOV','DEC'];
 var S, toastTimer, drawing=false, wantScroll=false;
-var ui={owner:false,otab:'overview',period:'month',sort:'sold',user:'33',pick:null,err:'',tab:'card',ws:null,page:'work',sheet:null,tool:'pen',confirm:null,viewTech:'33',copy:null,newws:false,edit:null,rowsel:null,punchsel:null,formErr:''};
+var ui={owner:true,otab:'overview',period:'month',sort:'sold',user:'owner',pick:null,err:'',tab:'card',ws:null,page:'work',sheet:null,tool:'pen',confirm:null,viewTech:'33',copy:null,newws:false,edit:null,rowsel:null,punchsel:null,formErr:''};
 
 /* ---------- example data ---------- */
 function seed(){
