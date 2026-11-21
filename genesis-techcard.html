@@ -7,6 +7,7 @@
   color-scheme:light;
   --bg:#ffffff; --ink:#111827; --muted:#5b6472; --line:#e4e7ec; --soft:#f5f7fa; --accent:#1d4ed8; --on-accent:#ffffff;
   --pink:#f7b3c8; --pink-dark:#3a2029; --pen:#2438a8; --marker:#e0202a; --stamp:#5a4a78; --hl:#f59e0b;
+  --rev:#15803d; --et:#b45309; --idle:#c2410c;
   --good:#15803d; --warn:#b45309; --bad:#b91c1c;
   --ui:"Inter","Segoe UI",Helvetica,Arial,sans-serif; --print:Arial,Helvetica,sans-serif; --hand:"Patrick Hand","Comic Sans MS",cursive; --mark:"Permanent Marker","Patrick Hand",cursive; --mono:"Courier New",Courier,monospace;
 }
@@ -174,6 +175,53 @@ table.t{border-collapse:collapse;width:100%;font-size:14px}
 .loglist li{padding:7px 0;border-bottom:1px solid var(--line)}
 .loglist .stp{padding:0;font-size:12px}
 .btn[aria-pressed="true"]{border-color:var(--ink);background:var(--soft)}
+.seg{display:inline-flex;border:1px solid var(--line);border-radius:10px;overflow:hidden}
+.seg button{background:none;border:0;padding:8px 12px;font-size:14px;font-weight:600;color:var(--muted)}
+.seg button[aria-pressed="true"]{background:var(--ink);color:var(--bg)}
+section{display:flex;flex-direction:column;gap:14px;min-width:0}
+.lead{font-size:20px;line-height:1.4;max-width:34em;text-wrap:balance}
+.stt{display:inline-flex;align-items:center;gap:8px;font-size:14px;font-weight:500;color:var(--muted);white-space:nowrap}
+.stt i,.dot{display:inline-block;width:9px;height:9px;border-radius:50%;background:var(--line);flex:none}
+.stt.ro i,.dot.ro{background:var(--rev)} .stt.e i,.dot.e{background:var(--et)} .stt.idle i,.dot.idle{background:var(--idle)}
+.stt.ro,.stt.e,.stt.idle{color:var(--ink)}
+.t th small{display:block;font-weight:400;white-space:normal;min-width:58px;line-height:1.25}
+.t tfoot td{font-weight:700;border-bottom:0;border-top:1px solid var(--ink)}
+.rank td{font-size:16px} .rank .n{color:var(--muted);width:26px} .rank .name{font-weight:600}
+.tag{display:inline-block;margin-left:8px;padding:2px 9px;border-radius:99px;background:var(--accent);color:var(--on-accent);font-size:12px;font-weight:600;vertical-align:middle}
+.barcell{min-width:120px;width:28%}
+.bar{height:8px;border-radius:4px;background:var(--soft);overflow:hidden}
+.bar i{display:block;height:100%;background:var(--ink);border-radius:4px}
+.rank tr.first .bar i{background:var(--accent)}
+.figs{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:18px}
+.fig b{display:block;font-size:34px;font-weight:700;letter-spacing:-.02em;line-height:1.1}
+.fig span{font-size:14px;color:var(--muted)}
+.erow{display:grid;grid-template-columns:210px minmax(0,1fr) 140px;gap:14px;align-items:center;padding:9px 0;border-bottom:1px solid var(--line);font-size:15px}
+.erow b{display:inline-block;min-width:42px;color:var(--et)}
+.erow span:last-child{text-align:right}
+.erow .bar i{background:var(--et)}
+.live{display:grid;grid-template-columns:90px 160px minmax(0,1fr) 150px;gap:8px 14px;align-items:center;padding:11px 0;border-bottom:1px solid var(--line)}
+.track{position:relative;height:8px;background:var(--soft);border-radius:4px;overflow:hidden}
+.track i{position:absolute;top:0;bottom:0}
+.track .shift{background:var(--idle)} .track .ro{background:var(--rev)} .track .e{background:var(--et)}
+.alert{display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:6px 14px;align-items:baseline;padding:11px 0;border-bottom:1px solid var(--line)}
+.pace{position:relative;height:14px;background:var(--soft);border-radius:7px}
+.pace i{position:absolute;top:0;bottom:0;left:0;border-radius:7px}
+.pace .proj{background:var(--line)} .pace .sold{background:var(--accent)}
+.pace .mark{top:-6px;bottom:-6px;width:2px;background:var(--ink);border-radius:0}
+.recap{white-space:pre-line;background:var(--soft);border-radius:10px;padding:14px 16px;max-width:46em}
+.tv{display:flex;flex-direction:column;background:var(--ink);color:var(--bg);border-radius:14px;padding:clamp(18px,4vw,40px)}
+.tv h3{color:var(--bg);opacity:.7;margin-bottom:10px}
+.tvrow{display:grid;grid-template-columns:1.4em minmax(0,7em) minmax(0,1fr) auto minmax(0,7em);gap:clamp(10px,2vw,24px);align-items:center;padding:clamp(10px,1.6vw,18px) 0;border-top:1px solid rgba(255,255,255,.16);font-size:clamp(20px,3.4vw,36px);font-weight:600}
+.tvrow .n{opacity:.6} .tvrow .g{font-size:.5em;font-weight:500;opacity:.8;text-align:right}
+.tvrow .bar{background:rgba(255,255,255,.14);height:12px;border-radius:6px} .tvrow .bar i{background:var(--bg);border-radius:6px}
+.tvrow:first-of-type .bar i{background:#6ea0ff}
+.tvrow .dot{width:.4em;height:.4em;vertical-align:middle}
+@media (max-width:600px){
+  .erow{grid-template-columns:minmax(0,1fr) 140px}.erow .bar{grid-column:1/-1;grid-row:2}
+  .live{grid-template-columns:minmax(0,1fr) auto}.live .track{grid-column:1/-1}.live span:last-child{grid-column:1/-1;text-align:left!important}
+  .alert{grid-template-columns:auto minmax(0,1fr)}.alert .link{grid-column:2;justify-self:start}
+  .tvrow{grid-template-columns:1.4em minmax(0,1fr) auto}.tvrow .bar,.tvrow .g{display:none}
+}
 .foot{font-size:13px;color:var(--muted);border-top:1px solid var(--line);padding-top:14px}
 </style>
 
@@ -191,14 +239,14 @@ var ECODES=[['E-1','Moving vehicles'],['E-2A','Quality control (paid)'],['E-2B',
 var ENAME={}; ECODES.forEach(function(e){ENAME[e[0]]=e[1]});
 var MON=['JAN','FEB','MAR','APR','MAY','JUN','JUL','AUG','SEP','OCT','NOV','DEC'];
 var S, toastTimer, drawing=false, wantScroll=false;
-var ui={user:'33',pick:null,err:'',tab:'card',ws:null,page:'work',sheet:null,tool:'pen',confirm:null,viewTech:'33',copy:null,newws:false,edit:null,rowsel:null,punchsel:null,formErr:''};
+var ui={owner:false,otab:'overview',period:'month',sort:'sold',user:'33',pick:null,err:'',tab:'card',ws:null,page:'work',sheet:null,tool:'pen',confirm:null,viewTech:'33',copy:null,newws:false,edit:null,rowsel:null,punchsel:null,formErr:''};
 
 /* ---------- example data ---------- */
 function seed(){
   var now=Date.now(), L=7.3, d=new Date(), eight=new Date(d.getFullYear(),d.getMonth(),d.getDate(),8,0).getTime(), t0=now-L*H, k=1;
   if(now-eight>2.5*H&&now-eight<10*H){t0=eight;k=(now-eight)/(L*H)}
   var at=function(h){return Math.round(t0+h*k*H)};
-  var s={seedAt:now,seq:1,techs:[{id:'31',name:'Craig'},{id:'87',name:'Winstel'},{id:'33',name:'Ken'},{id:'52',name:'Eric'},{id:'15',name:'Jeremy'}],ws:[],punches:[],rows:[],log:[]};
+  var s={seedAt:now,seq:1,rate:170,techs:[{id:'31',name:'Craig'},{id:'87',name:'Winstel'},{id:'33',name:'Ken'},{id:'52',name:'Eric'},{id:'15',name:'Jeremy'}],ws:[],punches:[],rows:[],log:[]};
   function W(id,ro,tech,cust,veh,coach,date,lines,parts){s.ws.push({id:id,ro:ro,tech:tech,cust:cust,vehicle:veh,coach:coach,advisor:'Ken M.',date:date,mileage:'',qc:'',lines:lines,parts:parts||[],strokes:[],dnotes:''})}
   function Ln(desc,sold,x){var l={desc:desc,sold:sold,tt0:0,done:false,note:'',by:'advisor',doneRow:null};for(var a in x)l[a]=x[a];return l}
   var today=(d.getMonth()+1)+'/'+d.getDate();
@@ -247,7 +295,9 @@ function parseT(str,tid){var s=String(str).trim(),h; if(!s)return null;
   var first=techPunches(tid)[0],base=first?new Date(first.in).setHours(0,0,0,0):day0(),t=base+Math.round(h*H);
   return first&&t<first.in-2*H&&t+24*H<=Date.now()+1000?t+24*H:t}
 function isAdv(){return ui.user=='adv'}
-function me(){return isAdv()?'Ken M.':tech(ui.user).name}
+function who(){return ui.user=='owner'?'Brian':isAdv()?'Ken M.':tech(ui.user).name}
+function me(){return ui.owner&&ui.user!='owner'?'Brian (as '+who()+')':who()}
+function ini(){return ui.owner?'BH':'KM'}
 function say(m){var t=document.getElementById('toast');t.textContent=m;t.hidden=false;clearTimeout(toastTimer);toastTimer=setTimeout(function(){t.hidden=true},4000)}
 function rowHrs(r){return hrs((r.off||Date.now())-r.on)}
 function rowChecks(r){var a=[]; if(r.kind=='ro')S.ws.forEach(function(w){w.lines.forEach(function(l,i){if(l.doneRow==r.id)a.push({w:w,i:i,l:l})})}); return a}
@@ -316,7 +366,7 @@ function punchOn(id,kind,ref,line){
 }
 var ACT={
   pick:function(d){ui.pick=d.id;ui.err=''}, unpick:function(){ui.pick=null},
-  signout:function(){ui.user=null;ui.pick=null;ui.ws=null;clearEdits()},
+  signout:function(){ui.user=null;ui.owner=false;ui.pick=null;ui.ws=null;ui.copy=null;clearEdits()},
   tab:function(d){ui.tab=d.v;ui.ws=null;ui.copy=null;ui.newws=false;clearEdits()},
   page:function(d){ui.page=d.v;clearEdits()},
   open:function(d){ui.ws=d.id;ui.page='work';clearEdits()}, close:function(){ui.ws=null;clearEdits()},
@@ -327,9 +377,9 @@ var ACT={
   one:function(d){punchOn(ui.user,'e',d.code)},
   off:function(){endCur(ui.user);say('Punched off. Pick the next job or an E-time code.')},
   used:function(d){var p=ws(d.ws).parts[+d.i];p.used=!p.used},
-  psold:function(d){var n=new Date();ws(d.ws).parts[+d.i].sold='KM '+(n.getMonth()+1)+'/'+n.getDate();say('Part marked sold')},
+  psold:function(d){var n=new Date();ws(d.ws).parts[+d.i].sold=ini()+' '+(n.getMonth()+1)+'/'+n.getDate();say('Part marked sold')},
   punsold:function(d){ws(d.ws).parts[+d.i].sold='';say('Sold mark removed')},
-  qc:function(d){var n=new Date();ws(d.ws).qc='KM '+(n.getMonth()+1)+'/'+n.getDate();clearEdits();say('QC signed. The worksheet is now closed to changes.')},
+  qc:function(d){var n=new Date();ws(d.ws).qc=ini()+' '+(n.getMonth()+1)+'/'+n.getDate();clearEdits();say('QC signed. The worksheet is now closed to changes.')},
   unqc:function(d){ if(!confirmStep('unqc'))return 'keep'; ws(d.ws).qc='';say('QC sign-off removed. The worksheet can be changed again.')},
   tool:function(d){ui.tool=d.v},
   undo:function(d){ws(d.ws).strokes.pop()},
@@ -338,6 +388,13 @@ var ACT={
   newws:function(){ui.newws=!ui.newws},
   copy:function(){var t=ttmTSV(); ui.copy=null;
     try{navigator.clipboard.writeText(t).then(function(){say('Copied. Paste it into the TTM spreadsheet.')},function(){ui.copy=t;render()})}catch(e){ui.copy=t}},
+  viewas:function(d){ui.user=d.id;ui.tab=d.id=='adv'?'ws':'card';ui.ws=null;ui.copy=null;clearEdits()},
+  exitview:function(){ui.user='owner';ui.ws=null;ui.copy=null;clearEdits()},
+  otab:function(d){ui.otab=d.v;ui.copy=null},
+  period:function(d){ui.period=d.v}, sort:function(d){ui.sort=d.v},
+  copyrep:function(){copyText(repTSV(),'Copied. Paste it into the TTM spreadsheet.')},
+  copymsg:function(){copyText(recap(),'Message copied.')},
+  copypay:function(){copyText(payTSV(),'Payroll hours copied. Paste them into Excel or Google Sheets.')},
   reset:function(){S=seed();ui.ws=null;clearEdits();say('Example day reset')},
 
   /* worksheet line and part corrections */
@@ -350,7 +407,7 @@ var ACT={
     logIt(w.tech,'reopened RO '+w.ro+' line '+(i+1)+(had&&l.sold?', taking '+num(l.sold)+' flat rate hours back off the card':''));
     say('Line '+(i+1)+' reopened.'+(had&&l.sold?' Its flat rate hours came off the time card.':''))},
   decline:function(d){var w=ws(d.ws),i=+d.i,l=w.lines[i]; if(!perm(w,i).decline)return; if(!confirmStep('dc'+d.ws+i))return 'keep';
-    var n=new Date(),tt=lineTT(w,i),off=[]; l.declined='KM '+(n.getMonth()+1)+'/'+n.getDate();
+    var n=new Date(),tt=lineTT(w,i),off=[]; l.declined=ini()+' '+(n.getMonth()+1)+'/'+n.getDate();
     S.rows.forEach(function(r){if(r.kind=='ro'&&r.ws==w.id&&r.line==i&&!r.off){r.off=Date.now();off.push(tech(r.tech).name)}});
     if(tt>0.004)logIt(w.tech,'marked RO '+w.ro+' line '+(i+1)+' declined by the customer; '+num(tt)+' hours stay on the card with no flat rate hours'+(off.length?', and '+off.join(', ')+' was punched off it':''));
     clearEdits(); say('Line '+(i+1)+' marked declined.'+(off.length?' '+off.join(', ')+' was punched off it.':''))},
@@ -384,7 +441,10 @@ document.addEventListener('keydown',function(ev){
   if((ev.key=='Enter'||ev.key==' ')&&ev.target.getAttribute&&ev.target.getAttribute('role')=='button'){ev.preventDefault();ev.target.click()}
 });
 document.addEventListener('change',function(ev){
-  var el=ev.target,d=el.dataset; if(!d.k)return; var w=ws(d.ws),v=el.value.trim();
+  var el=ev.target,d=el.dataset;
+  if(el.id=='viewas'){ if(el.value)ACT.viewas({id:el.value}); else ACT.exitview(); ui.sheet=null;ui.confirm=null;render();return }
+  if(el.id=='rate'){var rt=parseFloat(el.value);S.rate=rt>0?rt:170;save();render();return}
+  if(!d.k)return; var w=ws(d.ws),v=el.value.trim();
   if(d.k=='mileage')w.mileage=v;
   if(d.k=='dnotes')w.dnotes=el.value;
   if(d.k=='sold'){var n=parseFloat(v);w.lines[+d.i].sold=isNaN(n)?null:n}
@@ -393,7 +453,7 @@ document.addEventListener('change',function(ev){
 });
 document.addEventListener('submit',function(ev){
   ev.preventDefault(); var f=ev.target,k=f.dataset.form,v=function(n){return f.elements[n].value.trim()},fail=function(m){ui.formErr=m;render()};
-  if(k=='login'){ if(v('pin')!=PIN)ui.err='That PIN does not match. For this demo every PIN is '+PIN+'.'; else{ui.user=ui.pick;ui.pick=null;ui.err='';ui.tab=isAdv()?'ws':'card';ui.ws=null;clearEdits()} }
+  if(k=='login'){ if(v('pin')!=PIN)ui.err='That PIN does not match. For this demo every PIN is '+PIN+'.'; else{ui.user=ui.pick;ui.owner=ui.pick=='owner';ui.pick=null;ui.err='';ui.tab=isAdv()?'ws':'card';ui.ws=null;clearEdits()} }
   if(k=='done'){
     var c=cur(ui.user); if(!c||c.kind!='ro')return; if(!v('note'))return say('Write your notes before checking off the labor.');
     var w=ws(c.ws),l=w.lines[c.line]; l.done=true;l.note=v('note');l.doneRow=c.id;c.off=Date.now();ui.sheet=null;
@@ -450,12 +510,12 @@ document.addEventListener('submit',function(ev){
 
 /* ---------- sign in ---------- */
 function vLogin(){
-  if(ui.pick){var n=ui.pick=='adv'?'Ken M.':tech(ui.pick).name;
+  if(ui.pick){var n=ui.pick=='adv'?'Ken M.':ui.pick=='owner'?'Brian':tech(ui.pick).name;
     return '<form class="stack" data-form="login" style="max-width:420px"><h2>Hi '+esc(n)+'</h2><label class="f">Your 4-digit PIN<input class="field" id="pin" name="pin" type="password" inputmode="numeric" maxlength="4" autocomplete="off"></label>'+
       (ui.err?'<p class="bad small">'+esc(ui.err)+'</p>':'<p class="muted small">Demo PIN for everyone: '+PIN+'</p>')+
       '<div class="row"><button class="btn primary" type="submit">Sign in</button><button class="link" type="button" data-act="unpick">Not '+esc(n)+'?</button></div></form>'}
   return '<div class="stack"><h2>Who is signing in?</h2><div class="people">'+S.techs.map(function(t){return '<button data-act="pick" data-id="'+t.id+'">'+esc(t.name)+'<span>Technician '+t.id+'</span></button>'}).join('')+
-    '<button data-act="pick" data-id="adv">Ken M.<span>Service advisor</span></button></div></div>';
+    '<button data-act="pick" data-id="adv">Ken M.<span>Service advisor</span></button><button data-act="pick" data-id="owner">Brian Holthe<span>Owner</span></button></div></div>';
 }
 
 /* ---------- pink time card ---------- */
@@ -574,9 +634,9 @@ function vWork(w){
     if(a.length)h+='<div class="lact">'+a.join('')+'</div>';
   }
   h+='<div class="sfoot"><div class="fl2">ADVISOR<span class="mk">'+esc(w.advisor)+'</span></div><div class="fl2">PAGE<span></span></div>'+
-     '<div class="fl2">OUT MILEAGE:<input class="hw" id="mi-'+w.id+'" data-k="mileage" data-ws="'+w.id+'" value="'+esc(w.mileage)+'" inputmode="numeric" aria-label="Out mileage"'+(lk?' disabled':'')+'></div>'+
+     '<div class="fl2">OUT MILEAGE:<input class="hw" id="mi-'+w.id+'" data-k="mileage" data-ws="'+w.id+'" value="'+esc(w.mileage)+'" inputmode="numeric" aria-label="Out mileage"'+(lk||!(adv||own)?' disabled':'')+'></div>'+
      '<div class="fl2">QC By:<span class="hw">'+esc(w.qc)+'</span></div></div></div>';
-  if(!lk)h+='<form class="panel row" data-form="addline" data-ws="'+w.id+'" style="align-items:flex-end"><label class="f" style="flex:3 1 220px">'+(adv?'Add a work line':'Recommend more work')+'<input class="field" id="al-desc" name="desc" placeholder="e.g. Reseal roof" autocomplete="off"></label>'+
+  if(!lk&&(adv||own))h+='<form class="panel row" data-form="addline" data-ws="'+w.id+'" style="align-items:flex-end"><label class="f" style="flex:3 1 220px">'+(adv?'Add a work line':'Recommend more work')+'<input class="field" id="al-desc" name="desc" placeholder="e.g. Reseal roof" autocomplete="off"></label>'+
      (adv?'<label class="f" style="flex:0 1 110px">Sold hours<input class="field" id="al-sold" name="sold" inputmode="decimal" autocomplete="off"></label>':'<input type="hidden" name="sold" value="">')+'<button class="btn" type="submit">Add line</button>'+
      (adv?'<button class="btn primary" type="button" data-act="qc" data-ws="'+w.id+'">Sign QC</button>':'')+'</form>';
   else if(adv)h+='<div class="row"><button class="btn" data-act="unqc" data-ws="'+w.id+'">'+(ui.confirm=='unqc'?'Tap again to remove the QC sign-off':'Remove QC sign-off to make changes')+'</button></div>';
@@ -587,26 +647,27 @@ function vParts(w){
   var adv=isAdv(),lk=locked(w),E=ui.edit&&ui.edit.ws==w.id&&ui.edit.t=='part'?w.parts[ui.edit.i]:null,form;
   if(E)form='<form class="panel stack" data-form="epart" data-ws="'+w.id+'" data-i="'+ui.edit.i+'">'+panelHead('Edit parts request')+'<div class="row" style="align-items:flex-end"><label class="f" style="flex:0 1 70px">Qty<input class="field" id="ep-qty" name="qty" value="'+esc(E.qty)+'" inputmode="numeric" autocomplete="off"></label><label class="f" style="flex:3 1 220px">Part or recommended labor<input class="field" id="ep-desc" name="desc" value="'+esc(E.desc)+'" autocomplete="off"></label><label class="f" style="flex:0 1 90px">ETC hours<input class="field" id="ep-etc" name="etc" value="'+esc(E.etc)+'" inputmode="decimal" autocomplete="off"></label></div>'+
     '<div class="row"><button class="btn primary" type="submit">Save changes</button><button class="btn danger" type="button" data-act="delpart" data-ws="'+w.id+'" data-i="'+ui.edit.i+'">'+(ui.confirm=='dp'+w.id+ui.edit.i?'Tap again to delete':'Delete request')+'</button></div></form>';
-  else if(!lk)form='<form class="panel row" data-form="addpart" data-ws="'+w.id+'" style="align-items:flex-end"><label class="f" style="flex:0 1 70px">Qty<input class="field" id="ap-qty" name="qty" inputmode="numeric" autocomplete="off"></label><label class="f" style="flex:3 1 220px">Part or recommended labor<input class="field" id="ap-desc" name="desc" placeholder="Part #, size, model, serial #" autocomplete="off"></label><label class="f" style="flex:0 1 90px">ETC hours<input class="field" id="ap-etc" name="etc" inputmode="decimal" autocomplete="off"></label><button class="btn primary" type="submit">Request</button></form>'+
+  else if(!lk&&(adv||w.tech==ui.user))form='<form class="panel row" data-form="addpart" data-ws="'+w.id+'" style="align-items:flex-end"><label class="f" style="flex:0 1 70px">Qty<input class="field" id="ap-qty" name="qty" inputmode="numeric" autocomplete="off"></label><label class="f" style="flex:3 1 220px">Part or recommended labor<input class="field" id="ap-desc" name="desc" placeholder="Part #, size, model, serial #" autocomplete="off"></label><label class="f" style="flex:0 1 90px">ETC hours<input class="field" id="ap-etc" name="etc" inputmode="decimal" autocomplete="off"></label><button class="btn primary" type="submit">Request</button></form>'+
     (adv?'':'<p class="small muted">You can edit or delete a request until the advisor marks it sold.</p>');
-  else form='<p class="panel small">QC is signed, so this parts request is closed to changes.</p>';
+  else form=lk?'<p class="panel small">QC is signed, so this parts request is closed to changes.</p>':'';
   return '<div class="sheet"><div class="ptitle">PARTS REQUEST</div><div class="pmeta"><div class="fl2">Service Advisor<span class="mk">'+esc(w.advisor)+'</span></div><div class="fl2">Tech #<span class="mk">'+w.tech+'</span></div><div class="fl2">Tech Name<span class="mk">'+esc(tech(w.tech).name)+'</span></div>'+
     '<div class="fl2">Date<span class="mk">'+esc(w.date)+'</span></div><div class="fl2">RO#<span class="mk">'+esc(w.ro)+'</span></div><div class="fl2">Customer<span class="mk">'+esc(w.cust)+'</span></div><div class="fl2" style="grid-column:1/-1">Vehicle Info<span class="mk">'+esc(w.vehicle)+' '+esc(w.coach)+'</span></div></div>'+
     '<div class="scroll"><table class="pt"><thead><tr><th style="width:52px">Used on Job</th><th style="width:44px">Qty</th><th>Part # (if known) &amp; brief description. Labor description with ETC (Estimated Time for Completion)</th><th style="width:54px">ETC</th><th style="width:92px">Part Sold Advisor Initials &amp; Date</th><th style="width:130px">Date Ordered ETA</th></tr></thead><tbody>'+
     w.parts.map(function(p,i){var at='data-ws="'+w.id+'" data-i="'+i+'"',ui2=' style="font-family:var(--ui)"';
-      return '<tr><td><input type="checkbox" data-act="used" '+at+(p.used?' checked':'')+(lk?' disabled':'')+' aria-label="Used on job"></td><td class="hw">'+esc(p.qty)+'</td><td class="l hw">'+esc(p.desc)+(partPerm(w,p)?' <button class="link" data-act="edit" data-t="part" '+at+ui2+'>Edit</button>':'')+'</td><td class="hw">'+esc(p.etc)+'</td>'+
+      return '<tr><td><input type="checkbox" data-act="used" '+at+(p.used?' checked':'')+(lk||ui.user=='owner'?' disabled':'')+' aria-label="Used on job"></td><td class="hw">'+esc(p.qty)+'</td><td class="l hw">'+esc(p.desc)+(partPerm(w,p)?' <button class="link" data-act="edit" data-t="part" '+at+ui2+'>Edit</button>':'')+'</td><td class="hw">'+esc(p.etc)+'</td>'+
       '<td class="hw">'+(p.sold?esc(p.sold)+(adv&&!lk?' <button class="link" data-act="punsold" '+at+ui2+'>Undo</button>':''):adv&&!lk?'<button class="btn sm" data-act="psold" '+at+ui2+'>Mark sold</button>':'')+'</td>'+
       '<td class="hw">'+(adv&&!lk?'<input class="hw" id="eta-'+w.id+'-'+i+'" data-k="eta" '+at+' value="'+esc(p.ordered)+'" placeholder="date, ETA" aria-label="Date ordered and ETA">':esc(p.ordered))+'</td></tr>'}).join('')+
     '<tr><td></td><td></td><td></td><td></td><td></td><td></td></tr><tr><td></td><td></td><td></td><td></td><td></td><td></td></tr></tbody></table></div></div>'+form;
 }
 function vDiagram(w){
+  if(ui.user=='owner')return '<canvas id="dia" data-ws="'+w.id+'" aria-label="RV diagram"></canvas>'+(w.dnotes?'<p><b>Notes:</b> '+esc(w.dnotes)+'</p>':'');
   return '<div class="row"><button class="btn sm tool" data-act="tool" data-v="pen" aria-pressed="'+(ui.tool=='pen')+'">Pen</button><button class="btn sm tool" data-act="tool" data-v="hl" aria-pressed="'+(ui.tool=='hl')+'">Highlighter</button><button class="btn sm" data-act="undo" data-ws="'+w.id+'">Undo</button><button class="btn sm danger" data-act="clear" data-ws="'+w.id+'">'+(ui.confirm=='clear'?'Tap again to erase all':'Erase all')+'</button><span class="small muted">Draw with your finger to mark problem areas.</span></div>'+
     '<canvas id="dia" data-ws="'+w.id+'" aria-label="RV diagram"></canvas>'+
     '<label class="f">Typed notes for this diagram<textarea class="field" id="dn-'+w.id+'" data-k="dnotes" data-ws="'+w.id+'" placeholder="e.g. Sealant needs attention at rear roof seam">'+esc(w.dnotes)+'</textarea></label>';
 }
 function vWs(w){
   var P=[['work','Worksheet'],['parts','Parts request'+(w.parts.length?' ('+w.parts.length+')':'')],['diagram','Diagram']];
-  return '<div class="row spread"><button class="link" data-act="close">&larr; All worksheets</button><span class="small muted">RO '+esc(w.ro)+' &middot; '+esc(w.cust)+' &middot; Tech '+w.tech+'</span></div>'+
+  return (ui.user=='owner'?'<p class="panel small">You are looking at this worksheet as the owner, so it is read-only. To make changes, use \u201cView as\u201d at the top and pick the advisor or the tech.</p>':'')+'<div class="row spread"><button class="link" data-act="close">&larr; '+(ui.user=='owner'?'Back to owner view':'All worksheets')+'</button><span class="small muted">RO '+esc(w.ro)+' &middot; '+esc(w.cust)+' &middot; Tech '+w.tech+'</span></div>'+
     '<nav class="tabs">'+P.map(function(p){return '<button aria-selected="'+(ui.page==p[0])+'" data-act="page" data-v="'+p[0]+'">'+p[1]+'</button>'}).join('')+'</nav>'+
     (ui.page=='work'?vWork(w):ui.page=='parts'?vParts(w):vDiagram(w));
 }
@@ -683,15 +744,178 @@ function vAdvCards(){
     (ui.rowsel?rowPanelAdv(tid):'')+(ui.punchsel?punchPanelAdv(tid):'')+vCard(tid,true)+vLog(tid);
 }
 
+/* ---------- owner ---------- */
+/* month-to-date hours from the June CompuTrek sheet, used as the example month */
+var MONTH={'31':{sold:29.27,avail:29.27,ro:29.27},'87':{sold:179.21,avail:157.17,ro:144.36},'33':{sold:192.88,avail:153.41,ro:141.31},'52':{sold:256.46,avail:157.20,ro:153.48},'15':{sold:51.61,avail:105.80,ro:64.86}};
+/* monthly forecast from the sheet; the example treats today as working day 21 of 22 */
+var FC={target:761.70,day:21,days:22};
+/* example clocked hours for earlier days this week, Monday to Saturday */
+var WEEK={'31':[8.1,8.0,7.9,8.2,8.0,0],'87':[8.4,8.0,8.6,8.1,8.3,4.0],'33':[8.0,8.2,8.0,7.8,8.1,0],'52':[8.5,8.3,8.4,8.6,8.2,4.2],'15':[8.0,7.6,8.1,8.0,7.9,0]};
+var DAYS=['Mon','Tue','Wed','Thu','Fri','Sat'];
+var SLABEL={ro:'On a repair order',e:'E-time',idle:'Punched in, no job',out:'Punched out',off:'Not punched in'};
+function techStatus(id){var c=cur(id); if(c)return c.kind; if(openPunch(id))return 'idle'; return techPunches(id).length?'out':'off'}
+function stt(s){return '<span class="stt '+s+'"><i></i>'+SLABEL[s]+'</span>'}
+function money(h){return '$'+Math.round(h*S.rate).toLocaleString('en-US')}
+function pct(n,d){return d>0.005?Math.round(n/d*100):null}
+function grade(v,g,m){return v==null?'':v>=g?'good':v>=m?'warn':'bad'}
+function perf(id,period){var T=totals(id),p={sold:T.F,avail:T.A,ro:T.B},m=MONTH[id]; if(period=='month'&&m){p.sold+=m.sold;p.avail+=m.avail;p.ro+=m.ro}
+  p.et=p.avail-p.ro;p.eff=pct(p.sold,p.ro);p.prod=pct(p.ro,p.avail);return p}
+function eToday(id){var e={};techRows(id).forEach(function(r){if(r.kind=='e')e[r.code]=(e[r.code]||0)+rowHrs(r)});var u=totals(id).E;if(u>0.004)e.Unrec=u;return e}
+function activity(id){var c=cur(id),p=openPunch(id); if(c)return {t:c.kind=='ro'?'RO '+ws(c.ws).ro+' line '+(c.line+1):c.code+' '+ENAME[c.code],since:c.on};
+  if(p){var last=p.in;techRows(id).forEach(function(r){if(r.off&&r.off>last)last=r.off});return {t:'No job',since:last}} return null}
+function copyText(t,msg){ui.copy=null; try{navigator.clipboard.writeText(t).then(function(){say(msg)},function(){ui.copy=t;render()})}catch(e){ui.copy=t}}
+function copyBox(){return ui.copy?'<div class="stack"><p class="small">Select all of this text, copy it, and paste it where you need it.</p><textarea class="field" id="tsv" readonly>'+esc(ui.copy)+'</textarea></div>':''}
+function seg(act,curv,opts){return '<div class="seg">'+opts.map(function(o){return '<button data-act="'+act+'" data-v="'+o[0]+'" aria-pressed="'+(curv==o[0])+'">'+o[1]+'</button>'}).join('')+'</div>'}
+
+function alertItems(){
+  var now=Date.now(),a=[],off=[],wait=0,parts=0;
+  S.techs.forEach(function(t){var s=techStatus(t.id),T=totals(t.id);
+    if(s=='idle'){var ac=activity(t.id),m=Math.floor((now-ac.since)/60000); if(m>=15)a.push({c:'idle',t:t.name+' has been punched in with no job for '+m+' minutes, about '+money((now-ac.since)/H)+' of shop time so far.',b:['viewas',t.id,'View as '+t.name]})}
+    else if(T.E>0.25)a.push({c:'e',t:t.name+' has '+num(T.E)+' hours today that are not recorded against a job or an E-code.',b:['viewas',t.id,'View as '+t.name]});
+    if(s=='off')off.push(t.name)});
+  S.ws.forEach(function(w){var act=w.lines.filter(function(l){return !l.declined}),nm=tech(w.tech).name;
+    w.lines.forEach(function(l,i){var tt=lineTT(w,i);
+      if(l.declined&&tt>0.004)a.push({c:'idle',t:'RO '+w.ro+' line '+(i+1)+' was declined by the customer after '+nm+' clocked '+num(tt)+' hours on it, about '+money(tt)+' of unbilled time.',b:['open',w.id,'Open worksheet']});
+      else if(l.sold==null&&!l.declined&&lineClocked(w,i))a.push({c:'idle',t:nm+' started RO '+w.ro+' line '+(i+1)+' before it was approved: '+num(tt)+' hours clocked with no sold hours yet.',b:['open',w.id,'Open worksheet']});
+      else if(l.sold==null&&!l.declined)wait++});
+    if(act.length&&act.every(function(l){return l.done})&&!w.qc)a.push({c:'e',t:'RO '+w.ro+' ('+w.cust+') is finished and waiting for QC.',b:['open',w.id,'Open worksheet']});
+    w.parts.forEach(function(p){if(!p.sold&&!locked(w))parts++})});
+  S.rows.forEach(function(r){if(r.kind=='e'&&r.code=='E-2B'&&rowHrs(r)>0.02)a.push({c:'e',t:tech(r.tech).name+' spent '+num(rowHrs(r))+' hours on a comeback, about '+money(rowHrs(r))+' of unbilled time.'})});
+  if(wait)a.push({c:'e',t:wait+' recommended line'+(wait>1?'s are':' is')+' waiting for the advisor to approve or decline.'});
+  if(parts)a.push({c:'e',t:parts+' parts request'+(parts>1?'s are':' is')+' waiting for the advisor.'});
+  if(S.log.length)a.push({c:'',t:S.log.length+' time card correction'+(S.log.length>1?'s were':' was')+' made today.',b:['otab','report','See the list']});
+  if(off.length)a.push({c:'',t:off.join(', ')+(off.length>1?' have':' has')+' not punched in today.'});
+  return a;
+}
+function vAlerts(){
+  var a=alertItems(); if(!a.length)return '';
+  return '<section><h2>Needs your attention</h2><div>'+a.map(function(x){return '<div class="alert"><i class="dot '+x.c+'"></i><span>'+esc(x.t)+'</span>'+(x.b?'<button class="link" data-act="'+x.b[0]+'" data-id="'+x.b[1]+'" data-v="'+x.b[1]+'">'+esc(x.b[2])+'</button>':'<span></span>')+'</div>'}).join('')+'</div></section>';
+}
+function vForecast(){
+  var sold=0; S.techs.forEach(function(t){sold+=perf(t.id,'month').sold});
+  var proj=sold/FC.day*FC.days,gap=proj-FC.target,left=FC.days-FC.day,need=(FC.target-sold)/left,avg=sold/FC.day,max=Math.max(proj,FC.target)*1.04;
+  var w=function(v){return (v/max*100).toFixed(1)+'%'};
+  return '<section><h2>Month-end forecast</h2><p class="lead">At this pace the shop finishes the month at <b>'+proj.toFixed(0)+' sold hours</b>, '+
+    (gap<0?'<b class="bad">'+Math.abs(gap).toFixed(0)+' short</b>':'<b class="good">'+gap.toFixed(0)+' ahead</b>')+' of the '+FC.target.toFixed(0)+'-hour forecast'+
+    (gap<0?', about '+money(-gap)+' in labor sales. Hitting the forecast takes '+need.toFixed(1)+' sold hours on each remaining day; the daily average so far is '+avg.toFixed(1)+'.':'.')+'</p>'+
+    '<div class="pace"><i class="proj" style="width:'+w(proj)+'"></i><i class="sold" style="width:'+w(sold)+'"></i><i class="mark" style="left:'+w(FC.target)+'"></i></div>'+
+    '<div class="row small muted" style="gap:16px"><span><i class="dot" style="background:var(--accent)"></i> Sold so far: '+sold.toFixed(0)+'</span><span><i class="dot"></i> Projected: '+proj.toFixed(0)+'</span><span>Line: forecast, '+FC.target.toFixed(0)+'</span><span>Example assumes working day '+FC.day+' of '+FC.days+'</span></div></section>';
+}
+function vShop(rows,P){
+  var t={sold:0,avail:0,ro:0},e={}; rows.forEach(function(r){t.sold+=r.p.sold;t.avail+=r.p.avail;t.ro+=r.p.ro});
+  S.techs.forEach(function(x){var ee=eToday(x.id);for(var k in ee)e[k]=(e[k]||0)+ee[k]});
+  var eff=pct(t.sold,t.ro),prod=pct(t.ro,t.avail),codes=[]; for(var k in e)if(e[k]>0.008)codes.push({k:k,h:e[k]}); codes.sort(function(a,b){return b.h-a.h});
+  var max=codes.length?codes[0].h:1,fig=function(v,l,c){return '<div class="fig"><b class="'+(c||'')+'">'+v+'</b><span>'+l+'</span></div>'};
+  return '<section><div class="row spread"><h2>The shop '+(P=='month'?'this month':'today')+'</h2><label class="row small muted" style="gap:8px">Labor rate $<input class="field" id="rate" inputmode="decimal" value="'+S.rate+'" style="width:84px;padding:7px 10px">per hour</label></div><div class="figs">'+
+    fig(t.sold.toFixed(1),'sold hours')+fig(eff==null?'n/a':eff+'%','efficiency',grade(eff,100,85))+fig(prod==null?'n/a':prod+'%','productivity, target '+TARGET+'%',grade(prod,TARGET,80))+fig(money(t.avail-t.ro),'of E-time ('+(t.avail-t.ro).toFixed(1)+' hours)','warn')+'</div>'+
+    (codes.length?'<h3 style="margin-top:8px">Where today’s E-time went</h3><div>'+codes.map(function(x){
+      return '<div class="erow"><span><b>'+(x.k=='Unrec'?'&ndash;':x.k)+'</b> '+(x.k=='Unrec'?'Not recorded':ENAME[x.k])+'</span><div class="bar"><i style="width:'+(x.h/max*100).toFixed(1)+'%"></i></div><span>'+money(x.h)+'<span class="muted"> &middot; '+x.h.toFixed(2)+' hr</span></span></div>'}).join('')+'</div>':'')+'</section>';
+}
+function vRightNow(){
+  var now=Date.now(),t0=now-H,n={ro:0,e:0,idle:0,all:0}; S.punches.forEach(function(p){if(p.in<t0)t0=p.in}); var span=now-t0;
+  S.techs.forEach(function(t){var s=techStatus(t.id);if(s in n){n[s]++;n.all++}});
+  var pos=function(a,b){return 'left:'+((a-t0)/span*100).toFixed(2)+'%;width:'+(((b||now)-a)/span*100).toFixed(2)+'%'};
+  return '<section><div class="row spread"><h2>Right now</h2><span class="muted small">'+n.all+' of '+S.techs.length+' punched in &middot; '+n.ro+' on repair orders &middot; '+n.e+' on E-time &middot; '+n.idle+' with no job</span></div><div>'+
+    S.techs.map(function(t){var s=techStatus(t.id),a=activity(t.id);
+      return '<div class="live"><button class="link" data-act="viewas" data-id="'+t.id+'" style="font-size:16px;text-align:left">'+esc(t.name)+'</button>'+stt(s)+'<div class="track">'+
+        techPunches(t.id).map(function(p){return '<i class="shift" style="'+pos(p.in,p.out)+'"></i>'}).join('')+
+        techRows(t.id).map(function(r){return '<i class="'+r.kind+'" style="'+pos(r.on,r.off)+'" title="'+esc(jobName(r))+'"></i>'}).join('')+
+        '</div><span class="small" style="text-align:right">'+(a?esc(a.t):'')+'</span></div>'}).join('')+
+    '</div><div class="row small muted" style="gap:16px"><span><i class="dot ro"></i> Repair order</span><span><i class="dot e"></i> E-time</span><span><i class="dot idle"></i> Not recorded</span><span>Bars run from '+fmtT(t0)+' to now. Tap a name to view as that tech.</span></div></section>';
+}
+function vOwnOverview(){
+  var P=ui.period,K=ui.sort,rows=S.techs.map(function(t){return {t:t,p:perf(t.id,P)}}).filter(function(r){return r.p.avail>0.02});
+  rows.sort(function(a,b){return (b.p[K]==null?-1:b.p[K])-(a.p[K]==null?-1:a.p[K])});
+  var max=Math.max.apply(null,rows.map(function(r){return r.p.sold}).concat([0.01])),top=rows[0],lead='',KL={sold:'sold hours',eff:'efficiency',prod:'productivity'};
+  if(top){var when=P=='month'?'this month':'today',below=rows.filter(function(r){return r.p.prod<TARGET});
+    lead='<b>'+esc(top.t.name)+'</b> is the top performer '+when+' by '+KL[K]+': '+top.p.sold.toFixed(1)+' sold hours'+(top.p.eff!=null?' at '+top.p.eff+'% efficiency':'')+'. '+
+      (below.length?(rows.length-below.length)+' of '+rows.length+' techs are at or above the '+TARGET+'% bonus line. Below it: '+below.map(function(r){return '<b>'+esc(r.t.name)+'</b> at '+r.p.prod+'%'}).join(', ')+'.':'All '+rows.length+' techs are at or above the '+TARGET+'% bonus line.')}
+  return vAlerts()+'<section><div class="row spread"><h2>Top performers</h2><div class="row">'+seg('period',P,[['today','Today'],['month','This month']])+seg('sort',K,[['sold','Sold hours'],['eff','Efficiency'],['prod','Productivity']])+'</div></div>'+
+    '<p class="lead">'+lead+'</p><div class="scroll"><table class="t rank"><thead><tr><th></th><th class="l">Technician</th><th class="l">Sold hours</th><th></th><th>Efficiency</th><th>Productivity</th><th>Bonus</th><th>E-time cost</th></tr></thead><tbody>'+
+    rows.map(function(r,i){var p=r.p;return '<tr class="'+(i==0?'first':'')+'"><td class="n">'+(i+1)+'</td><td class="l name">'+esc(r.t.name)+(i==0?'<span class="tag">Top performer</span>':'')+'</td>'+
+      '<td class="barcell"><div class="bar"><i style="width:'+(p.sold/max*100).toFixed(1)+'%"></i></div></td><td><b>'+p.sold.toFixed(1)+'</b></td>'+
+      '<td class="'+grade(p.eff,100,85)+'">'+(p.eff==null?'<span class="muted">n/a</span>':p.eff+'%')+'</td><td class="'+grade(p.prod,TARGET,80)+'">'+p.prod+'%</td>'+
+      '<td>'+(p.prod>=TARGET?'<span class="good">On track</span>':'<span class="bad">Below '+TARGET+'%</span>')+'</td><td>'+money(p.et)+'<span class="muted"> &middot; '+p.et.toFixed(1)+' hr</span></td></tr>'}).join('')+
+    '</tbody></table></div><p class="muted small" style="max-width:46em"><b>Sold hours</b> are the flat rate hours on checked-off lines. <b>Efficiency</b> is sold hours divided by actual hours on repair orders. <b>Productivity</b> is the share of punched-in time spent on repair orders; '+TARGET+'% qualifies a tech for the bonus. <b>E-time cost</b> is E-time hours at the labor rate.'+(P=='month'?' Month figures are the June totals from the CompuTrek sheet plus today’s example punches.':'')+'</p></section>'+
+    vForecast()+vShop(rows,P)+vRightNow();
+}
+function repRows(){
+  var tot={e:{},et:0,F:0,A:0,B:0};
+  var rows=S.techs.map(function(t){var T=totals(t.id),e=eToday(t.id); for(var k in e)tot.e[k]=(tot.e[k]||0)+e[k]; tot.et+=T.C;tot.F+=T.F;tot.A+=T.A;tot.B+=T.B;
+    return {name:t.id+' '+t.name,e:e,et:T.C,F:T.F,A:T.A,B:T.B}});
+  rows.push({name:'Daily totals',e:tot.e,et:tot.et,F:tot.F,A:tot.A,B:tot.B,total:true}); return rows;
+}
+var RCOLS=ECODES.map(function(c){return [c[0],c[1]]}).concat([['Unrec','Not recorded']]);
+function recap(){
+  var rows=S.techs.map(function(t){return {t:t,p:perf(t.id,'today')}}).filter(function(r){return r.p.avail>0.02}),t={sold:0,avail:0,ro:0};
+  rows.forEach(function(r){t.sold+=r.p.sold;t.avail+=r.p.avail;t.ro+=r.p.ro});
+  var top=rows.slice().sort(function(a,b){return b.p.sold-a.p.sold})[0],et=t.avail-t.ro,ok=rows.filter(function(r){return r.p.prod>=TARGET}).length;
+  var L=['Genesis shop recap for '+new Date().toLocaleDateString([],{weekday:'long',month:'long',day:'numeric'})+'.',
+    rows.length+' of '+S.techs.length+' techs punched in. Sold '+t.sold.toFixed(1)+' hours at '+(pct(t.sold,t.ro)||0)+'% efficiency and '+(pct(t.ro,t.avail)||0)+'% productivity.',
+    ok+' of '+rows.length+' techs at or above the '+TARGET+'% bonus line.'];
+  if(top&&top.p.sold>0)L.push('Top performer: '+top.t.name+' with '+top.p.sold.toFixed(1)+' sold hours.');
+  L.push('E-time: '+et.toFixed(1)+' hours, about '+money(et)+'.');
+  var w=alertItems().filter(function(x){return x.c}).slice(0,3); if(w.length)L.push('Watch:\n'+w.map(function(x){return '- '+x.t}).join('\n'));
+  return L.join('\n');
+}
+function repTSV(){return [['Technician'].concat(RCOLS.map(function(c){return c[0]+' '+c[1]}),['Total E-time','Sold hours','Available hours','Actual hours on jobs','Productivity %','Efficiency %']).join('\t')].concat(repRows().map(function(r){
+  return [r.name].concat(RCOLS.map(function(c){return (r.e[c[0]]||0).toFixed(2)}),[r.et.toFixed(2),r.F.toFixed(2),r.A.toFixed(2),r.B.toFixed(2),pct(r.B,r.A)==null?'':pct(r.B,r.A),pct(r.F,r.B)==null?'':pct(r.F,r.B)]).join('\t')})).join('\n')}
+function vOwnReport(){
+  var rows=repRows(),z=function(v){return v>0.004?v.toFixed(2):''};
+  var tr=function(r){var p=pct(r.B,r.A),ef=pct(r.F,r.B);return '<tr><td>'+esc(r.name)+'</td>'+RCOLS.map(function(c){return '<td>'+z(r.e[c[0]]||0)+'</td>'}).join('')+
+    '<td><b>'+z(r.et)+'</b></td><td>'+z(r.F)+'</td><td>'+z(r.A)+'</td><td>'+z(r.B)+'</td><td class="'+grade(p,TARGET,80)+'">'+(p==null?'':p+'%')+'</td><td class="'+grade(ef,100,85)+'">'+(ef==null?'':ef+'%')+'</td></tr>'};
+  var log=S.log.length?'<div class="stack" style="gap:6px"><h3>Time card corrections today</h3><ul class="loglist">'+S.log.map(function(x){return '<li><span class="stp">'+fmtT(x.at)+'</span> '+esc(tech(x.tech).name)+'’s card: '+esc(x.who)+' '+esc(x.text)+'.</li>'}).join('')+'</ul></div>':'';
+  return '<section><div class="row spread"><div><h2>Daily time control summary</h2><span class="muted small">'+new Date().toLocaleDateString([],{weekday:'long',month:'long',day:'numeric',year:'numeric'})+'</span></div><button class="btn" data-act="copyrep">Copy for TTM</button></div>'+copyBox()+
+    '<div class="stack"><div class="row spread"><h3>End-of-day message</h3><button class="link" data-act="copymsg">Copy message</button></div><p class="recap">'+esc(recap())+'</p><p class="muted small">The live version can text or email this to you when the last tech punches out.</p></div>'+
+    '<div class="scroll"><table class="t"><thead><tr><th>Technician</th>'+RCOLS.map(function(c){return '<th>'+(c[0]=='Unrec'?'&ndash;':c[0])+'<small>'+c[1]+'</small></th>'}).join('')+'<th>Total<small>E-time</small></th><th>Sold<small>hours</small></th><th>Available<small>hours</small></th><th>Actual<small>hours on jobs</small></th><th>Productivity</th><th>Efficiency</th></tr></thead>'+
+    '<tbody>'+rows.slice(0,-1).map(tr).join('')+'</tbody><tfoot>'+tr(rows[rows.length-1])+'</tfoot></table></div>'+
+    '<p class="muted small" style="max-width:46em">These are the figures that go into the TTM spreadsheet (E-time, sold time, available time), filled in from the time cards. Sold hours count once a line is checked off and has sold hours.</p>'+log+'</section>';
+}
+function vOwnWs(){
+  return '<section><div><h2>Repair orders</h2><p class="muted small" style="margin-top:6px">Every technician worksheet, with sold hours against the tech’s actual time. Opening one from here is read-only.</p></div>'+
+    '<div class="scroll"><table class="t"><thead><tr><th>RO</th><th class="l">Customer</th><th class="l">Tech</th><th class="l">Progress</th><th>Sold</th><th>Tech time</th><th>Over / under</th><th class="l">Flags</th></tr></thead><tbody>'+
+    S.ws.map(function(w){var s=wsStatus(w),sold=0,tt=0,act=w.lines.filter(function(l){return !l.declined}); w.lines.forEach(function(l,i){if(!l.declined)sold+=l.sold||0;tt+=lineTT(w,i)});
+      var fin=act.length&&act.every(function(l){return l.done}),v=tt-sold;
+      return '<tr><td><button class="link" data-act="open" data-id="'+w.id+'" style="font-size:15px">'+esc(w.ro)+'</button></td><td class="l">'+esc(w.cust)+'</td><td class="l">'+esc(tech(w.tech).name)+'</td><td class="l">'+s.text+'</td><td>'+sold.toFixed(2)+'</td><td>'+(tt>0.004?tt.toFixed(2):'')+'</td>'+
+        '<td class="'+(fin?(v>0?'bad':'good'):'')+'">'+(fin?(v>0?'+':'')+v.toFixed(2):'')+'</td><td class="l wrapc small">'+(s.flags||'')+'</td></tr>'}).join('')+'</tbody></table></div></section>';
+}
+function payRows(){
+  var di=(new Date().getDay()+6)%7;
+  return S.techs.map(function(t){var w=WEEK[t.id]||[0,0,0,0,0,0],d=[],tot=0;
+    for(var i=0;i<6;i++){var v=i<di?w[i]:i==di?totals(t.id).A:null;d.push(v);tot+=v||0}
+    return {name:t.id+' '+t.name,d:d,tot:tot}});
+}
+function payTSV(){return [['Technician'].concat(DAYS,['Total','Regular','Overtime']).join('\t')].concat(payRows().map(function(r){
+  return [r.name].concat(r.d.map(function(v){return v==null?'':v.toFixed(2)}),[r.tot.toFixed(2),Math.min(40,r.tot).toFixed(2),Math.max(0,r.tot-40).toFixed(2)]).join('\t')})).join('\n')}
+function vOwnPay(){
+  return '<section><div class="row spread"><div><h2>Payroll hours this week</h2><p class="muted small" style="margin-top:6px">Punched-in hours from the time cards, with unpaid lunch left out. Earlier days are examples; today is live.</p></div><button class="btn" data-act="copypay">Copy for payroll</button></div>'+copyBox()+
+    '<div class="scroll"><table class="t"><thead><tr><th>Technician</th>'+DAYS.map(function(d){return '<th>'+d+'</th>'}).join('')+'<th>Total</th><th>Regular</th><th>Overtime</th></tr></thead><tbody>'+
+    payRows().map(function(r){var ot=Math.max(0,r.tot-40);return '<tr><td>'+esc(r.name)+'</td>'+r.d.map(function(v){return '<td>'+(v?v.toFixed(2):'')+'</td>'}).join('')+
+      '<td><b>'+r.tot.toFixed(2)+'</b></td><td>'+Math.min(40,r.tot).toFixed(2)+'</td><td class="'+(ot>0?'bad':'')+'">'+(ot>0?ot.toFixed(2):'')+'</td></tr>'}).join('')+'</tbody></table></div></section>';
+}
+function vOwnTV(){
+  var rows=S.techs.map(function(t){return {t:t,p:perf(t.id,'month')}}).filter(function(r){return r.p.avail>0.02}).sort(function(a,b){return b.p.sold-a.p.sold}),max=rows.length?rows[0].p.sold:1;
+  return '<section><div><h2>Shop TV board</h2><p class="muted small" style="margin-top:6px">A large leaderboard for a screen on the shop wall. It shows sold hours and productivity only, with no dollar figures.</p></div><div class="tv"><h3>Sold hours this month</h3>'+
+    rows.map(function(r,i){return '<div class="tvrow"><span class="n">'+(i+1)+'</span><span class="nm"><i class="dot '+techStatus(r.t.id)+'"></i> '+esc(r.t.name)+'</span><div class="bar"><i style="width:'+(r.p.sold/max*100).toFixed(1)+'%"></i></div><b>'+r.p.sold.toFixed(1)+'</b><span class="g">'+r.p.prod+'% on jobs</span></div>'}).join('')+'</div></section>';
+}
+function vOwner(){
+  var T=[['overview','Overview'],['report','Daily report'],['ros','Repair orders'],['pay','Payroll'],['tv','Shop TV']],V={overview:vOwnOverview,report:vOwnReport,ros:vOwnWs,pay:vOwnPay,tv:vOwnTV};
+  return '<nav class="tabs">'+T.map(function(t){return '<button aria-selected="'+(ui.otab==t[0])+'" data-act="otab" data-v="'+t[0]+'">'+t[1]+'</button>'}).join('')+'</nav>'+V[ui.otab]();
+}
+
 /* ---------- shell ---------- */
 function render(){
   var w='',v='';
-  if(ui.user){w='<span>'+(isAdv()?'Ken M., service advisor':esc(tech(ui.user).name)+', tech '+ui.user)+'</span><button class="link" data-act="signout">Switch user</button>'}
+  if(ui.user){
+    if(ui.owner)w='<label class="row small muted" style="gap:6px">View as<select class="field" id="viewas" style="width:auto;padding:6px 8px;font-size:14px"><option value="">Owner (me)</option><option value="adv"'+(ui.user=='adv'?' selected':'')+'>Ken M., advisor</option>'+S.techs.map(function(t){return '<option value="'+t.id+'"'+(ui.user==t.id?' selected':'')+'>'+esc(t.name)+', tech '+t.id+'</option>'}).join('')+'</select></label>';
+    w+='<span>'+(ui.owner?'Brian, owner':isAdv()?'Ken M., service advisor':esc(tech(ui.user).name)+', tech '+ui.user)+'</span><button class="link" data-act="signout">Switch user</button>'}
   document.getElementById('who').innerHTML=w;
   if(!ui.user)v=vLogin();
+  else if(ui.user=='owner')v=ui.ws&&ws(ui.ws)?vWs(ws(ui.ws)):vOwner();
   else{
+    if(ui.owner)v='<div class="panel row spread small"><span>You are viewing the tool as <b>'+esc(who())+'</b>. Anything you change here is recorded as Brian.</span><button class="link" data-act="exitview">Back to owner view</button></div>';
     var T=isAdv()?[['ws','Worksheets'],['parts','Parts requests'],['cards','Time cards']]:[['card','Time card'],['ws','My worksheets']];
-    v='<nav class="tabs">'+T.map(function(t){return '<button aria-selected="'+(ui.tab==t[0])+'" data-act="tab" data-v="'+t[0]+'">'+t[1]+'</button>'}).join('')+'</nav>';
+    v+='<nav class="tabs">'+T.map(function(t){return '<button aria-selected="'+(ui.tab==t[0])+'" data-act="tab" data-v="'+t[0]+'">'+t[1]+'</button>'}).join('')+'</nav>';
     if(ui.ws&&ws(ui.ws))v+=vWs(ws(ui.ws));
     else if(ui.tab=='card')v+=vTechCard();
     else if(ui.tab=='ws')v+=isAdv()?'<div class="row"><button class="btn primary" data-act="newws">'+(ui.newws?'Cancel':'New worksheet')+'</button></div>'+(ui.newws?vNewWs():'')+vWsList(S.ws,'All worksheets'):vWsList(S.ws.filter(function(x){return x.tech==ui.user}),'My worksheets');
@@ -699,13 +923,13 @@ function render(){
     else v+=vAdvCards();
   }
   document.getElementById('view').innerHTML=v;
-  var cv=document.getElementById('dia'); if(cv){paint(cv);wire(cv)}
+  var cv=document.getElementById('dia'); if(cv){paint(cv);if(ui.user!='owner')wire(cv)}
   var ids=['tsv','pin','note','enote','edesc','ep-desc'],f=null; for(var i=0;i<ids.length&&!f;i++)f=document.getElementById(ids[i]);
   if(f){f.focus({preventScroll:f.id!='pin'});if(f.select&&f.tagName=='INPUT'||f.id=='tsv')f.select()}
   var ep=document.getElementById('editpanel'); if(ep&&wantScroll)ep.scrollIntoView({block:'nearest'}); wantScroll=false;
 }
-S=load(); if(!S.log)S.log=[]; render();
+S=load(); if(!S.log)S.log=[]; if(!S.rate)S.rate=170; render();
 window.addEventListener('resize',function(){var cv=document.getElementById('dia'); if(cv&&!drawing)paint(cv)});
-setInterval(function(){ var a=document.activeElement; if(ui.user&&!ui.ws&&!ui.sheet&&!ui.edit&&!ui.rowsel&&!ui.punchsel&&!drawing&&(ui.tab=='card'||ui.tab=='cards')&&!(a&&/INPUT|SELECT|TEXTAREA/.test(a.tagName)))render() },15000);
+setInterval(function(){ var a=document.activeElement; if(ui.user&&!ui.ws&&!ui.sheet&&!ui.edit&&!ui.rowsel&&!ui.punchsel&&!drawing&&(ui.user=='owner'||ui.tab=='card'||ui.tab=='cards')&&!(a&&/INPUT|SELECT|TEXTAREA/.test(a.tagName)))render() },15000);
 })();
 </script>
