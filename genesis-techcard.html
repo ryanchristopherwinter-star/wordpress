@@ -199,7 +199,7 @@ section{display:flex;flex-direction:column;gap:14px;min-width:0}
 .erow b{display:inline-block;min-width:42px;color:var(--et)}
 .erow span:last-child{text-align:right}
 .erow .bar i{background:var(--et)}
-.live{display:grid;grid-template-columns:90px 160px minmax(0,1fr) 150px;gap:8px 14px;align-items:center;padding:11px 0;border-bottom:1px solid var(--line)}
+.live{display:grid;grid-template-columns:90px 160px minmax(0,1fr) 210px;gap:8px 14px;align-items:center;padding:11px 0;border-bottom:1px solid var(--line)}
 .track{position:relative;height:8px;background:var(--soft);border-radius:4px;overflow:hidden}
 .track i{position:absolute;top:0;bottom:0}
 .track .shift{background:var(--idle)} .track .ro{background:var(--rev)} .track .e{background:var(--et)}
@@ -222,11 +222,17 @@ section{display:flex;flex-direction:column;gap:14px;min-width:0}
   .alert{grid-template-columns:auto minmax(0,1fr)}.alert .link{grid-column:2;justify-self:start}
   .tvrow{grid-template-columns:1.4em minmax(0,1fr) auto}.tvrow .bar,.tvrow .g{display:none}
 }
+.clocks{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+.clk{border-left:4px solid var(--line);padding:2px 0 2px 12px;min-width:0}
+.clk small{display:block;font-size:13px;color:var(--muted);overflow-wrap:anywhere}
+.clk b{font-size:32px;font-weight:700;letter-spacing:-.02em;line-height:1.15}
+.clk.ro{border-color:var(--rev)} .clk.e{border-color:var(--et)} .clk.idle{border-color:var(--idle)} .clk.idle b{color:var(--idle)}
+[data-clock]{font-variant-numeric:tabular-nums}
 .foot{font-size:13px;color:var(--muted);border-top:1px solid var(--line);padding-top:14px}
 </style>
 
 <div class="wrap">
-  <header class="top"><div><h1>Tech Time Card</h1><span>Genesis Automotive &amp; RV</span></div><div class="row" id="who"></div></header>
+  <header class="top"><div><h1>Tech Time Card</h1><span>Genesis Automotive &amp; RV</span><span id="now" style="display:block"></span></div><div class="row" id="who"></div></header>
   <main id="view" class="stack" style="gap:22px"></main>
   <footer class="foot">Mockup. RO 30524 is copied from the paper worksheet; the other repair orders and today's punches are examples. Changes save only in this browser. <button class="link" data-act="reset" style="font-size:13px">Reset the example day</button></footer>
 </div>
@@ -522,22 +528,41 @@ function vLogin(){
 function vCard(id,click){
   var t=tech(id),T=totals(id),d=new Date(),ps=techPunches(id),rows=techRows(id);
   var st=function(tag,v){return '<div><i>'+tag+'</i><span class="stp">'+(v?stamp(v):'')+'</span></div>'};
-  var blk=function(p){return p?num(hrs((p.out||Date.now())-p.in)):''};
+  var op=!!openPunch(id),live=function(k){return op?' data-tot="'+k+'" data-tech="'+id+'"':''};
+  var blk=function(p){return '<span class="hw"'+(p&&!p.out?' data-dec="'+p.in+'"':'')+'>'+(p?num(hrs((p.out||Date.now())-p.in)):'')+'</span>'};
   var n=Math.max(10,rows.length),R='';
   for(var i=n-1;i>=0;i--){var r=rows[i],h=r?rowHrs(r):0,fl=r?rowFlat(r):0;
     R+='<div class="r'+(r&&!r.off?' cur':'')+(r&&ui.rowsel==r.id?' sel':'')+'"'+(r&&click?' role="button" tabindex="0" data-act="rowsel" data-id="'+r.id+'" aria-label="Row '+(i+1)+', '+esc(jobName(r))+'. Tap to correct."':'')+'><div><small>R.O. or W.O. No.</small><span class="hw">'+(r?esc(rowLabel(r)):'')+'</span></div><div><small>Empl. No.</small><span class="hw">'+(r?id:'')+'</span></div><div><small>Mech. Pay $</small></div>'+
-      '<div><small>Flat Rate Time</small><span class="hw">'+(fl?num(fl):'')+'</span></div><div><small>W - Time</small><span class="hw">'+(r&&r.kind=='e'?num(h):'')+'</span></div><div><small>Repair Order Time</small><span class="hw">'+(r&&r.kind=='ro'?num(h):'')+'</span></div>'+
+      '<div><small>Flat Rate Time</small><span class="hw">'+(fl?num(fl):'')+'</span></div><div><small>W - Time</small><span class="hw"'+(r&&!r.off&&r.kind=='e'?' data-dec="'+r.on+'"':'')+'>'+(r&&r.kind=='e'?num(h):'')+'</span></div><div><small>Repair Order Time</small><span class="hw"'+(r&&!r.off&&r.kind=='ro'?' data-dec="'+r.on+'"':'')+'>'+(r&&r.kind=='ro'?num(h):'')+'</span></div>'+
       '<div class="st"><span><small>Off</small><small>'+(i+1)+(r&&r.edited?'*':'')+'</small><em class="stp">'+(r&&r.off?stamp(r.off):'')+'</em></span><span><small>On</small><small></small><em class="stp">'+(r?stamp(r.on):'')+'</em></span></div></div>'}
-  var tot=function(l,v,k){return '<div class="tot"><small>'+l+'</small><span class="hw">'+v+'</span><i>'+k+'</i></div>'};
+  var tot=function(l,v,k){return '<div class="tot"><small>'+l+'</small><span class="hw"'+live(k)+'>'+v+'</span><i>'+k+'</i></div>'};
   return '<div class="card"><div class="chead"><div><span class="hw">'+esc(t.name)+'</span></div><div><span class="hw">'+id+'</span></div><div><span class="hw">'+(d.getMonth()+1)+'/'+d.getDate()+'/'+String(d.getFullYear()).slice(2)+'</span></div><small>Employee’s name</small><small style="text-align:center">No.</small><small style="text-align:center">Date</small></div>'+
   '<div class="cmid"><div class="ctitle">DAILY<br>TIME<br>AND<br>PAYROLL<br>RECORD.</div><div class="avail"><div class="vert">RECORD OF AVAILABLE TIME</div><div>'+
-    '<div class="arow"><b>OTHER TIME</b><div class="val"><span class="hw">'+blk(ps[2])+'</span></div><div class="stamps">'+st('OUT',ps[2]&&ps[2].out)+st('IN',ps[2]&&ps[2].in)+'</div></div>'+
+    '<div class="arow"><b>OTHER TIME</b><div class="val">'+blk(ps[2])+'</div><div class="stamps">'+st('OUT',ps[2]&&ps[2].out)+st('IN',ps[2]&&ps[2].in)+'</div></div>'+
     '<div class="arow"><b>OVER-TIME</b><div class="val"></div><div class="stamps">'+st('OUT')+st('IN')+'</div></div>'+
-    '<div class="arow"><b>REGULAR TIME</b><div class="val"><span class="hw">'+blk(ps[1])+'</span><span class="hw">'+blk(ps[0])+'</span></div><div class="stamps">'+st('OUT',ps[1]&&ps[1].out)+st('IN',ps[1]&&ps[1].in)+st('OUT',ps[0]&&ps[0].out)+st('IN',ps[0]&&ps[0].in)+'</div></div>'+
-    '<div class="arow"><b>TOTAL</b><div class="val"><span class="hw">'+(T.A?num(T.A):'')+'</span></div><div></div></div></div></div></div>'+
+    '<div class="arow"><b>REGULAR TIME</b><div class="val">'+blk(ps[1])+''+blk(ps[0])+'</div><div class="stamps">'+st('OUT',ps[1]&&ps[1].out)+st('IN',ps[1]&&ps[1].in)+st('OUT',ps[0]&&ps[0].out)+st('IN',ps[0]&&ps[0].in)+'</div></div>'+
+    '<div class="arow"><b>TOTAL</b><div class="val"><span class="hw"'+live('A')+'>'+(T.A?num(T.A):'')+'</span></div><div></div></div></div></div></div>'+
   '<div class="crows">'+R+'</div>'+
   '<div class="cfoot"><div><div class="fl"><b>FLAT<br>RATE</b><span></span><span class="hw">'+(T.F?num(T.F):'')+'</span></div><div class="w5">INCENTIVE PAY SYSTEM ONLY<u>W5 - TIME TO BE CHARGED TO:</u></div></div>'+
   '<div>'+tot('Total available time',T.A?num(T.A):'','A')+tot('Actual time',T.A?num(T.B):'','B')+tot('Total W - time (A minus B)',T.A?num(T.C):'','C')+tot('Recorded W - time',T.A?num(T.D):'','D')+tot('Unrecorded W - time (C minus D)',T.A?num(T.E):'','E')+'</div></div></div>';
+}
+function hms(ms){var s=Math.max(0,Math.floor(ms/1000)),h=Math.floor(s/3600),m=Math.floor(s%3600/60);s%=60;return h+':'+(m<10?'0':'')+m+':'+(s<10?'0':'')+s}
+/* two running clocks for a tech: the current job, and the day's punched-in time */
+function clocks(id){
+  var p=openPunch(id),c=cur(id),ps=techPunches(id); if(!ps.length)return '';
+  if(!p)return '<div class="clocks"><div class="clk"><small>Punched out for</small><b data-clock="'+ps[ps.length-1].out+'"></b></div><div class="clk"><small>Punched in today</small><b>'+hms(totals(id).A*H)+'</b></div></div>';
+  var a=activity(id);
+  return '<div class="clocks"><div class="clk '+(c?c.kind:'idle')+'"><small>'+(c?'On '+esc(a.t):'No job running')+'</small><b data-clock="'+a.since+'"></b></div><div class="clk"><small>Punched in today</small><b data-avail="1" data-tech="'+id+'"></b></div></div>';
+}
+/* once a second: refresh every running clock on the page */
+function tick(){
+  var now=Date.now(),els=document.querySelectorAll('[data-clock],[data-dec],[data-tot],[data-avail]'),cache={};
+  for(var i=0;i<els.length;i++){var el=els[i],d=el.dataset,t;
+    if(d.clock)t=hms(now-d.clock);
+    else if(d.dec)t=num(hrs(now-d.dec)+(+d.base||0));
+    else{var T=cache[d.tech]||(cache[d.tech]=totals(d.tech)); t=d.tot?num(T[d.tot]):hms(T.A*H)}
+    if(el.textContent!=t)el.textContent=t}
+  var n=document.getElementById('now'); if(n){var dd=new Date(now);n.textContent=dd.toLocaleTimeString([],{hour:'numeric',minute:'2-digit',second:'2-digit'})+' \u00b7 punch clock '+fmtT(now)}
 }
 function vLog(id){
   var a=S.log.filter(function(x){return x.tech==id}); if(!a.length)return '';
@@ -568,7 +593,7 @@ function rowPanelTech(id){
 }
 function vTechCard(){
   var id=ui.user,c=cur(id),p=openPunch(id),had=S.punches.some(function(x){return x.tech==id}),h='';
-  h+='<div class="stack narrow">';
+  h+='<div class="stack narrow">'+clocks(id);
   if(!p)h+='<button class="btn primary big" data-act="in">'+(had?'Punch back in':'Punch in for the day')+'</button>';
   else{
     h+='<div class="row"><button class="btn primary big" data-act="sheet" data-v="job">Punch on a job</button><button class="btn big" data-act="sheet" data-v="e">E-time</button></div>'+
@@ -609,12 +634,13 @@ function vWork(w){
      '<div class="fl2">Customer<span class="mk">'+esc(w.cust)+'</span></div><div class="fl2">RO#<span class="mk">'+esc(w.ro)+'</span></div>'+
      '<div class="fl2">Coach<span class="mk">'+esc(w.coach)+'</span></div><div class="fl2">Chassis<span class="mk">'+esc(w.vehicle)+'</span></div></div>'+
      '<div class="lhead"><span>Work to be performed:</span><span>SOLD</span><span class="r2">TT</span><span>TOTAL</span><span class="r2">TTT</span></div>';
+  var run=S.rows.filter(function(r){return r.kind=='ro'&&r.ws==w.id&&!r.off})[0],lv=function(v,yes){return yes?' data-dec="'+run.on+'" data-base="'+(v-rowHrs(run)).toFixed(4)+'"':''};
   for(var i=0;i<Math.max(12,w.lines.length);i++){var l=w.lines[i];
     if(!l){h+='<div class="ln"><span class="num">'+(i+1)+'.</span></div>';continue}
     var tt=lineTT(w,i),on=c&&c.kind=='ro'&&c.ws==w.id&&c.line==i,P=perm(w,i),ed=E&&E.i==i?E.t:null,at='data-ws="'+w.id+'" data-i="'+i+'"'; sT+=l.sold||0; tT+=tt;
     h+='<div class="ln'+(l.done?' done':'')+(on?' on':'')+(l.declined?' declined':'')+'"><span class="num">'+(i+1)+'.</span><span class="d hw">'+esc(l.desc)+'</span>'+
        '<span class="n hw">'+(l.declined?'<span class="decl">DECL</span>':adv&&!lk?'<input class="hw" id="sold-'+w.id+'-'+i+'" data-k="sold" '+at+' value="'+(l.sold==null?'':l.sold)+'" inputmode="decimal" placeholder="?" aria-label="Sold hours, line '+(i+1)+'">':(l.sold==null?'?':num(l.sold)))+'</span>'+
-       '<span class="n hw rd">'+(tt>0.004?num(tt):'')+'</span><span class="n hw">'+num(sT)+'</span><span class="n hw rd">'+(tT>0.004?num(tT):'')+'</span></div>';
+       '<span class="n hw rd"'+lv(tt,run&&run.line==i)+'>'+(tt>0.004?num(tt):'')+'</span><span class="n hw">'+num(sT)+'</span><span class="n hw rd"'+lv(tT,run&&i>=run.line)+'>'+(tT>0.004?num(tT):'')+'</span></div>';
     var a=[];
     if(ed=='desc')a.push('<form class="row" data-form="edesc" '+at+' style="flex:1 1 100%"><input class="field" id="edesc" name="desc" value="'+esc(l.desc)+'" autocomplete="off" aria-label="Work description" style="flex:1 1 200px"><button class="btn sm primary" type="submit">Save</button><button class="link" type="button" data-act="canceledit">Cancel</button></form>');
     if(ed=='note')a.push('<form class="stack" data-form="enote" '+at+' style="flex:1 1 100%;gap:8px"><textarea class="field" id="enote" name="note" placeholder="What you did and what you found" aria-label="Notes for line '+(i+1)+'">'+esc(l.note)+'</textarea><div class="row"><button class="btn sm primary" type="submit">Save notes</button><button class="link" type="button" data-act="canceledit">Cancel</button></div></form>');
@@ -623,7 +649,7 @@ function vWork(w){
     else if(l.sold==null)a.push('<span class="warn" style="flex:1 1 100%">'+(adv?'Recommended by the tech'+(tt>0.004?', who has already clocked '+num(tt)+' hours on it':'')+'. Enter sold hours once the customer approves.':'Not approved yet. You can start the work, but flat rate hours are only credited once the advisor adds sold hours.')+'</span>');
     if(!adv&&own&&!l.done&&!lk&&!l.declined){
       if(on&&ui.sheet=='done')a.push(doneForm(c));
-      else a.push(on?'<span class="good"><b>You are punched on this line.</b></span><button class="btn sm primary" data-act="sheet" data-v="done">Check off</button>':'<button class="btn sm primary" data-act="on" data-ws="'+w.id+'" data-line="'+i+'">Punch on</button>');
+      else a.push(on?'<span class="good"><b>You are punched on this line: <span data-clock="'+c.on+'"></span></b></span><button class="btn sm primary" data-act="sheet" data-v="done">Check off</button>':'<button class="btn sm primary" data-act="on" data-ws="'+w.id+'" data-line="'+i+'">Punch on</button>');
     }
     if(P.note&&ed!='note')a.push('<button class="link" data-act="edit" data-t="note" '+at+'>'+(l.note?'Edit notes':'Add notes')+'</button>');
     if(P.desc&&ed!='desc')a.push('<button class="link" data-act="edit" data-t="desc" '+at+'>Edit line</button>');
@@ -736,10 +762,10 @@ function vAdvCards(){
   var tid=ui.viewTech,ps=techPunches(tid);
   return '<div class="row spread"><h2>Today for the TTM spreadsheet</h2><button class="btn" data-act="copy">Copy for TTM</button></div>'+
     (ui.copy?'<div class="stack"><p class="small">Select all of this text, copy it, and paste it into the spreadsheet.</p><textarea class="field" id="tsv" readonly>'+esc(ui.copy)+'</textarea></div>':'')+
-    '<div class="scroll"><table class="t"><thead><tr><th>Tech</th><th>Available</th><th>Sold</th><th>Actual</th><th>E-time</th><th>Unrecorded</th><th>Productivity</th><th>Efficiency</th><th></th></tr></thead><tbody>'+
+    '<div class="scroll"><table class="t"><thead><tr><th>Tech</th><th>Available</th><th>Sold</th><th>Actual</th><th>E-time</th><th>Unrecorded</th><th>Productivity</th><th>Efficiency</th><th class="l">Running now</th><th></th></tr></thead><tbody>'+
     S.techs.map(function(t){var T=totals(t.id),z=T.A<0.01;return '<tr><td>'+t.id+' '+esc(t.name)+'</td><td>'+(z?'':T.A.toFixed(2))+'</td><td>'+(z?'':T.F.toFixed(2))+'</td><td>'+(z?'':T.B.toFixed(2))+'</td><td>'+(z?'':T.D.toFixed(2))+'</td><td class="'+(T.E>0.05?'warn':'')+'">'+(z?'':T.E.toFixed(2))+'</td>'+
-      '<td class="'+(T.prod==null?'':T.prod>=TARGET?'good':'warn')+'">'+(T.prod==null?'':T.prod+'%')+'</td><td>'+(T.eff==null?'':T.eff+'%')+'</td><td><button class="link" data-act="viewtech" data-id="'+t.id+'">'+(tid==t.id?'Showing':'View card')+'</button></td></tr>'}).join('')+'</tbody></table></div>'+
-    '<div class="stack narrow" style="gap:10px"><h3>'+esc(tech(tid).name)+'’s time card</h3><p class="small muted">Tap a filled row to correct its job or times.</p>'+
+      '<td class="'+(T.prod==null?'':T.prod>=TARGET?'good':'warn')+'">'+(T.prod==null?'':T.prod+'%')+'</td><td>'+(T.eff==null?'':T.eff+'%')+'</td><td class="l">'+(function(a){return a?esc(a.t)+' <b data-clock="'+a.since+'"></b>':''})(activity(t.id))+'</td><td><button class="link" data-act="viewtech" data-id="'+t.id+'">'+(tid==t.id?'Showing':'View card')+'</button></td></tr>'}).join('')+'</tbody></table></div>'+
+    '<div class="stack narrow" style="gap:10px"><h3>'+esc(tech(tid).name)+'’s time card</h3>'+clocks(tid)+'<p class="small muted">Tap a filled row to correct its job or times.</p>'+
     '<div class="row">'+ps.map(function(p,i){return '<button class="btn sm" data-act="punchsel" data-id="'+p.id+'" aria-pressed="'+(ui.punchsel==p.id)+'">Punch '+(i+1)+': '+span(p.in,p.out)+'</button>'}).join('')+'<button class="btn sm" data-act="punchsel" data-id="new">Add a punch</button><button class="btn sm" data-act="rowsel" data-id="new">Add a row</button></div></div>'+
     (ui.rowsel?rowPanelAdv(tid):'')+(ui.punchsel?punchPanelAdv(tid):'')+vCard(tid,true)+vLog(tid);
 }
@@ -820,7 +846,7 @@ function vRightNow(){
       return '<div class="live"><button class="link" data-act="viewas" data-id="'+t.id+'" style="font-size:16px;text-align:left">'+esc(t.name)+'</button>'+stt(s)+'<div class="track">'+
         techPunches(t.id).map(function(p){return '<i class="shift" style="'+pos(p.in,p.out)+'"></i>'}).join('')+
         techRows(t.id).map(function(r){return '<i class="'+r.kind+'" style="'+pos(r.on,r.off)+'" title="'+esc(jobName(r))+'"></i>'}).join('')+
-        '</div><span class="small" style="text-align:right">'+(a?esc(a.t):'')+'</span></div>'}).join('')+
+        '</div><span class="small" style="text-align:right">'+(a?esc(a.t)+' <b class="'+(s=='idle'?'bad':'')+'" data-clock="'+a.since+'"></b>':'')+'</span></div>'}).join('')+
     '</div><div class="row small muted" style="gap:16px"><span><i class="dot ro"></i> Repair order</span><span><i class="dot e"></i> E-time</span><span><i class="dot idle"></i> Not recorded</span><span>Bars run from '+fmtT(t0)+' to now. Tap a name to view as that tech.</span></div></section>';
 }
 function vOwnOverview(){
@@ -927,8 +953,10 @@ function render(){
   var ids=['tsv','pin','note','enote','edesc','ep-desc'],f=null; for(var i=0;i<ids.length&&!f;i++)f=document.getElementById(ids[i]);
   if(f){f.focus({preventScroll:f.id!='pin'});if(f.select&&f.tagName=='INPUT'||f.id=='tsv')f.select()}
   var ep=document.getElementById('editpanel'); if(ep&&wantScroll)ep.scrollIntoView({block:'nearest'}); wantScroll=false;
+  tick();
 }
 S=load(); if(!S.log)S.log=[]; if(!S.rate)S.rate=170; render();
+setInterval(tick,1000);
 window.addEventListener('resize',function(){var cv=document.getElementById('dia'); if(cv&&!drawing)paint(cv)});
 setInterval(function(){ var a=document.activeElement; if(ui.user&&!ui.ws&&!ui.sheet&&!ui.edit&&!ui.rowsel&&!ui.punchsel&&!drawing&&(ui.user=='owner'||ui.tab=='card'||ui.tab=='cards')&&!(a&&/INPUT|SELECT|TEXTAREA/.test(a.tagName)))render() },15000);
 })();
